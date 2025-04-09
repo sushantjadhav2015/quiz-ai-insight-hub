@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/AuthContext';
@@ -19,13 +18,13 @@ import {
   X
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { toast } from '@/hooks/use-toast';
 
 const Payments: React.FC = () => {
   const navigate = useNavigate();
   const { user, isLoading, isAdmin } = useAuth();
   const { payments, students, getStudentById } = useQuiz();
   
-  // Redirect if not logged in or not an admin
   useEffect(() => {
     if (!isLoading && (!user || !isAdmin)) {
       navigate('/login');
@@ -128,7 +127,6 @@ const Payments: React.FC = () => {
                                 size="sm"
                                 className="text-green-500 hover:text-green-700"
                                 onClick={() => {
-                                  // Logic to approve payment
                                   toast({
                                     title: "Payment approved",
                                     description: `Payment #${payment.id} has been approved.`,
@@ -144,7 +142,6 @@ const Payments: React.FC = () => {
                                 size="sm"
                                 className="text-red-500 hover:text-red-700"
                                 onClick={() => {
-                                  // Logic to decline payment
                                   toast({
                                     title: "Payment declined",
                                     description: `Payment #${payment.id} has been declined.`,

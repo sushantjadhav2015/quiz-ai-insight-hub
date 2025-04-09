@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState } from 'react';
 import { useAuth } from './AuthContext';
 import { Category, Question, QuizInfo, QuizSession, QuizResult, Payment, Student } from './types';
-import { toast } from './components/ui/use-toast';
+import { toast } from './hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
 
 // Sample quiz categories
@@ -438,7 +438,7 @@ export const QuizProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setCategories([...categories, newCategory]);
     toast({
       title: "Category created",
-      description: `"${newCategory.name}" has been created successfully.`,
+      description: `"${newCategory.name}" has been created successfully.",
     });
   };
   
@@ -449,7 +449,7 @@ export const QuizProvider: React.FC<{ children: React.ReactNode }> = ({ children
     
     toast({
       title: "Category updated",
-      description: `"${updatedCategory.name}" has been updated successfully.`,
+      description: `"${updatedCategory.name}" has been updated successfully.",
     });
   };
   
@@ -693,7 +693,8 @@ export const QuizProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // Also update the user profile
       const updatedUser = {
         ...user,
-        quizHistory: [...(user.quizHistory || []), result]
+        // Type cast to Student to access quizHistory
+        quizHistory: [...((user as Student).quizHistory || []), result]
       } as Student;
       updateUserProfile(updatedUser);
     }
@@ -886,7 +887,8 @@ export const QuizProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // Also update the user profile
       const updatedUser = {
         ...user,
-        paymentHistory: [...(user.paymentHistory || []), newPayment]
+        // Type cast to Student to access paymentHistory
+        paymentHistory: [...((user as Student).paymentHistory || []), newPayment]
       } as Student;
       updateUserProfile(updatedUser);
     }
