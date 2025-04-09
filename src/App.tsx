@@ -1,4 +1,5 @@
 
+import React from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -27,38 +28,40 @@ import Categories from "./pages/admin/Categories";
 const queryClient = new QueryClient();
 
 const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <AuthProvider>
-          <QuizProvider>
-            <Routes>
-              {/* Public Routes */}
-              <Route path="/" element={<Landing />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-              
-              {/* Student Routes */}
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/quiz/info" element={<QuizInfo />} />
-              <Route path="/quiz/payment" element={<QuizPayment />} />
-              <Route path="/quiz/session" element={<QuizSession />} />
-              <Route path="/results/:resultId" element={<QuizResult />} />
-              
-              {/* Admin Routes */}
-              <Route path="/admin/dashboard" element={<AdminDashboard />} />
-              <Route path="/admin/categories" element={<Categories />} />
-              
-              {/* 404 Catch-All Route */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </QuizProvider>
-        </AuthProvider>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
+  <React.StrictMode>
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <AuthProvider>
+            <QuizProvider>
+              <Routes>
+                {/* Public Routes */}
+                <Route path="/" element={<Landing />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+                
+                {/* Student Routes */}
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/quiz/info" element={<QuizInfo />} />
+                <Route path="/quiz/payment" element={<QuizPayment />} />
+                <Route path="/quiz/session" element={<QuizSession />} />
+                <Route path="/results/:resultId" element={<QuizResult />} />
+                
+                {/* Admin Routes */}
+                <Route path="/admin/dashboard" element={<AdminDashboard />} />
+                <Route path="/admin/categories" element={<Categories />} />
+                
+                {/* 404 Catch-All Route */}
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </QuizProvider>
+          </AuthProvider>
+        </BrowserRouter>
+      </TooltipProvider>
+    </QueryClientProvider>
+  </React.StrictMode>
 );
 
 export default App;
