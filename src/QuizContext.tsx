@@ -418,9 +418,6 @@ export const QuizProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return { isSecure: false, message: 'Quiz has already been completed' };
     }
     
-    // Add additional security checks here
-    // In a real app, you'd have more sophisticated checks
-    
     return { isSecure: true };
   };
   
@@ -438,7 +435,7 @@ export const QuizProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setCategories([...categories, newCategory]);
     toast({
       title: "Category created",
-      description: `"${newCategory.name}" has been created successfully.",
+      description: `"${newCategory.name}" has been created successfully.`
     });
   };
   
@@ -449,7 +446,7 @@ export const QuizProvider: React.FC<{ children: React.ReactNode }> = ({ children
     
     toast({
       title: "Category updated",
-      description: `"${updatedCategory.name}" has been updated successfully.",
+      description: `"${updatedCategory.name}" has been updated successfully.`
     });
   };
   
@@ -465,7 +462,7 @@ export const QuizProvider: React.FC<{ children: React.ReactNode }> = ({ children
       title: "Category deleted",
       description: categoryToDelete 
         ? `"${categoryToDelete.name}" has been deleted.`
-        : "Category has been deleted.",
+        : "Category has been deleted."
     });
   };
   
@@ -491,7 +488,7 @@ export const QuizProvider: React.FC<{ children: React.ReactNode }> = ({ children
     
     toast({
       title: "Question added",
-      description: "The question has been added successfully.",
+      description: "The question has been added successfully."
     });
   };
   
@@ -502,7 +499,7 @@ export const QuizProvider: React.FC<{ children: React.ReactNode }> = ({ children
     
     toast({
       title: "Question updated",
-      description: "The question has been updated successfully.",
+      description: "The question has been updated successfully."
     });
   };
   
@@ -526,7 +523,7 @@ export const QuizProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       toast({
         title: "Question deleted",
-        description: "The question has been deleted successfully.",
+        description: "The question has been deleted successfully."
       });
     }
   };
@@ -590,7 +587,7 @@ export const QuizProvider: React.FC<{ children: React.ReactNode }> = ({ children
     
     toast({
       title: "Quiz started",
-      description: "Your personalized quiz is ready. Good luck!",
+      description: "Your personalized quiz is ready. Good luck!"
     });
   };
   
@@ -701,7 +698,7 @@ export const QuizProvider: React.FC<{ children: React.ReactNode }> = ({ children
     
     toast({
       title: "Quiz completed",
-      description: "Your results are ready. Check out your personalized feedback!",
+      description: "Your results are ready. Check out your personalized feedback!"
     });
     
     return result;
@@ -895,7 +892,7 @@ export const QuizProvider: React.FC<{ children: React.ReactNode }> = ({ children
     
     toast({
       title: "Payment successful",
-      description: "You can now start your quiz!",
+      description: "You can now start your quiz!"
     });
     
     return newPayment;
