@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/AuthContext';
@@ -19,7 +18,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from '@/components/ui/dialog';
 import {
   DropdownMenu,
@@ -39,7 +37,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Category } from '@/types';
 import { MoreHorizontal, PlusCircle, Search, Trash, Edit, AlertCircle } from 'lucide-react';
-import { toast } from '@/components/ui/use-toast';
+import { toast } from '@/hooks/use-toast';
 
 const categorySchema = z.object({
   name: z.string().min(2, { message: 'Name must be at least 2 characters' }),
@@ -64,7 +62,6 @@ const Categories: React.FC = () => {
                category.description.toLowerCase().includes(searchTerm.toLowerCase())
   );
   
-  // Redirect if not logged in or not an admin
   useEffect(() => {
     if (!isLoading && (!user || !isAdmin)) {
       navigate('/login');
@@ -157,7 +154,6 @@ const Categories: React.FC = () => {
           </Button>
         </div>
         
-        {/* Search Bar */}
         <div className="relative mb-6">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
@@ -168,7 +164,6 @@ const Categories: React.FC = () => {
           />
         </div>
         
-        {/* Categories Table */}
         {filteredCategories.length > 0 ? (
           <div className="border rounded-md">
             <Table>
@@ -203,7 +198,10 @@ const Categories: React.FC = () => {
                             <Edit className="mr-2 h-4 w-4" />
                             Edit
                           </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => navigate(`/admin/categories/${category.id}/questions`)}>
+                          <DropdownMenuItem onClick={() => {
+                            setSelectedCategory(category);
+                            navigate(`/admin/questions`);
+                          }}>
                             <Search className="mr-2 h-4 w-4" />
                             View Questions
                           </DropdownMenuItem>
@@ -240,7 +238,6 @@ const Categories: React.FC = () => {
           </div>
         )}
         
-        {/* Create Category Modal */}
         <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
           <DialogContent>
             <DialogHeader>
@@ -276,7 +273,6 @@ const Categories: React.FC = () => {
           </DialogContent>
         </Dialog>
         
-        {/* Edit Category Modal */}
         <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
           <DialogContent>
             <DialogHeader>
@@ -312,7 +308,6 @@ const Categories: React.FC = () => {
           </DialogContent>
         </Dialog>
         
-        {/* Delete Category Modal */}
         <Dialog open={isDeleteModalOpen} onOpenChange={setIsDeleteModalOpen}>
           <DialogContent>
             <DialogHeader>

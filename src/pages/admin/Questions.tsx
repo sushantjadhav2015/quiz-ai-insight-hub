@@ -38,6 +38,7 @@ import {
 } from 'lucide-react';
 import { Question } from '@/types';
 import { Badge } from '@/components/ui/badge';
+import { toast } from '@/hooks/use-toast';
 
 const QuestionsPage: React.FC = () => {
   const navigate = useNavigate();
@@ -104,9 +105,17 @@ const QuestionsPage: React.FC = () => {
         ...newQuestion,
         id: editingQuestionId,
       });
+      toast({
+        title: "Question updated",
+        description: "The question has been updated successfully."
+      });
     } else {
       // Add new question
       addQuestion(newQuestion);
+      toast({
+        title: "Question added",
+        description: "The question has been added successfully."
+      });
     }
     
     resetForm();
@@ -123,6 +132,14 @@ const QuestionsPage: React.FC = () => {
     });
     setIsEditing(true);
     setEditingQuestionId(question.id);
+  };
+  
+  const handleDeleteQuestion = (id: string) => {
+    deleteQuestion(id);
+    toast({
+      title: "Question deleted",
+      description: "The question has been deleted successfully."
+    });
   };
   
   return (
@@ -240,7 +257,7 @@ const QuestionsPage: React.FC = () => {
               <Button type="button" variant="outline" onClick={resetForm}>
                 Cancel
               </Button>
-              <Button type="submit" onClick={handleSubmit}>
+              <Button type="button" onClick={handleSubmit}>
                 {isEditing ? (
                   <>
                     <Save className="mr-2 h-4 w-4" />
@@ -317,7 +334,7 @@ const QuestionsPage: React.FC = () => {
                                 variant="ghost"
                                 size="sm"
                                 className="text-red-500 hover:text-red-700"
-                                onClick={() => deleteQuestion(question.id)}
+                                onClick={() => handleDeleteQuestion(question.id)}
                               >
                                 <Trash className="h-4 w-4" />
                               </Button>

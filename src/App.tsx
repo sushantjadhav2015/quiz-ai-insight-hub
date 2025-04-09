@@ -16,6 +16,7 @@ import NotFound from "./pages/NotFound";
 
 // Student Pages
 import Dashboard from "./pages/Dashboard";
+import StudentHistory from "./pages/StudentHistory";
 import QuizInfo from "./pages/quiz/QuizInfo";
 import QuizPayment from "./pages/quiz/QuizPayment";
 import QuizSession from "./pages/quiz/QuizSession";
@@ -47,6 +48,7 @@ const App = () => (
                 
                 {/* Student Routes */}
                 <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/history" element={<StudentHistory />} />
                 <Route path="/quiz/info" element={<QuizInfo />} />
                 <Route path="/quiz/payment" element={<QuizPayment />} />
                 <Route path="/quiz/session" element={<QuizSession />} />
