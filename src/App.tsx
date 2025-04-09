@@ -24,6 +24,9 @@ import QuizResult from "./pages/quiz/QuizResult";
 // Admin Pages
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import Categories from "./pages/admin/Categories";
+import Students from "./pages/admin/Students";
+import Payments from "./pages/admin/Payments";
+import Questions from "./pages/admin/Questions";
 
 const queryClient = new QueryClient();
 
@@ -52,6 +55,9 @@ const App = () => (
                 {/* Admin Routes */}
                 <Route path="/admin/dashboard" element={<AdminDashboard />} />
                 <Route path="/admin/categories" element={<Categories />} />
+                <Route path="/admin/students" element={<Students />} />
+                <Route path="/admin/payments" element={<Payments />} />
+                <Route path="/admin/questions" element={<Questions />} />
                 
                 {/* 404 Catch-All Route */}
                 <Route path="*" element={<NotFound />} />

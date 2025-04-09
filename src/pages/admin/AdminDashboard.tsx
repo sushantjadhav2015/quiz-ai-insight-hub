@@ -18,13 +18,14 @@ import {
   FileCheck, 
   CreditCard, 
   PlusCircle, 
-  ArrowRight 
+  ArrowRight,
+  FileText
 } from 'lucide-react';
 
 const AdminDashboard: React.FC = () => {
   const navigate = useNavigate();
   const { user, isLoading, isAdmin } = useAuth();
-  const { categories, questions, quizResults, payments } = useQuiz();
+  const { categories, questions, quizResults, payments, students } = useQuiz();
   
   // Redirect if not logged in or not an admin
   useEffect(() => {
@@ -36,8 +37,6 @@ const AdminDashboard: React.FC = () => {
   if (isLoading || !user || !isAdmin) {
     return <div className="p-10 text-center">Loading...</div>;
   }
-  
-  const totalStudents = 1; // For demo purposes
   
   return (
     <Layout>
@@ -85,7 +84,7 @@ const AdminDashboard: React.FC = () => {
               <Users className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{totalStudents}</div>
+              <div className="text-2xl font-bold">{students.length}</div>
               <p className="text-xs text-muted-foreground">
                 Registered students
               </p>
@@ -152,7 +151,7 @@ const AdminDashboard: React.FC = () => {
               </Button>
               <Button
                 variant="outline"
-                onClick={() => navigate('/admin/questions/new')}
+                onClick={() => navigate('/admin/questions')}
                 className="w-full"
               >
                 <PlusCircle className="mr-2 h-4 w-4" />
@@ -210,24 +209,28 @@ const AdminDashboard: React.FC = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {quizResults.slice(0, 5).map((result) => (
-                      <tr key={result.id} className="border-b">
-                        <td className="py-3 px-4">Student #{result.userId}</td>
-                        <td className="py-3 px-4">{result.score}%</td>
-                        <td className="py-3 px-4">
-                          {new Date(result.completedAt).toLocaleDateString()}
-                        </td>
-                        <td className="py-3 px-4">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => navigate(`/admin/results/${result.id}`)}
-                          >
-                            View
-                          </Button>
-                        </td>
-                      </tr>
-                    ))}
+                    {quizResults.slice(0, 5).map((result) => {
+                      const student = students.find(s => s.id === result.userId);
+                      return (
+                        <tr key={result.id} className="border-b">
+                          <td className="py-3 px-4">{student ? student.name : `Student #${result.userId}`}</td>
+                          <td className="py-3 px-4">{result.score}%</td>
+                          <td className="py-3 px-4">
+                            {new Date(result.completedAt).toLocaleDateString()}
+                          </td>
+                          <td className="py-3 px-4">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => navigate(`/results/${result.id}`)}
+                            >
+                              <FileText className="mr-2 h-4 w-4" />
+                              View
+                            </Button>
+                          </td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>

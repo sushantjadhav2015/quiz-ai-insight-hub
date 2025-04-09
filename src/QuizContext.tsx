@@ -1,7 +1,6 @@
-
 import React, { createContext, useContext, useState } from 'react';
 import { useAuth } from './AuthContext';
-import { Category, Question, QuizInfo, QuizSession, QuizResult, Payment } from './types';
+import { Category, Question, QuizInfo, QuizSession, QuizResult, Payment, Student } from './types';
 import { toast } from './components/ui/use-toast';
 import { useNavigate } from 'react-router-dom';
 
@@ -93,7 +92,7 @@ const MOCK_QUESTIONS: Question[] = [
       'Observe the interactions of others',
       'Avoid social gatherings when possible'
     ],
-    correctOption: 0, // For personality tests, there's no "correct" answer
+    correctOption: 0,
     difficulty: 'easy',
   },
   {
@@ -106,7 +105,7 @@ const MOCK_QUESTIONS: Question[] = [
       'Consult others for their perspective',
       'Trust your intuition and feelings about it'
     ],
-    correctOption: 0, // For personality tests, there's no "correct" answer
+    correctOption: 0,
     difficulty: 'easy',
   },
   {
@@ -119,7 +118,7 @@ const MOCK_QUESTIONS: Question[] = [
       'Managing a team of people',
       'Working with technology and programming'
     ],
-    correctOption: 0, // For interest tests, there's no "correct" answer
+    correctOption: 0,
     difficulty: 'easy',
   },
   {
@@ -132,7 +131,7 @@ const MOCK_QUESTIONS: Question[] = [
       'Literature and language',
       'Biology and natural sciences'
     ],
-    correctOption: 0, // For interest tests, there's no "correct" answer
+    correctOption: 0,
     difficulty: 'easy',
   },
   {
@@ -163,6 +162,187 @@ const MOCK_QUESTIONS: Question[] = [
   },
 ];
 
+// Sample student data for admin panel
+const MOCK_STUDENTS: Student[] = [
+  {
+    id: '1',
+    email: 'student1@example.com',
+    name: 'Jane Smith',
+    role: 'student',
+    age: 19,
+    interests: ['Science', 'Technology'],
+    strengths: ['Critical thinking', 'Problem solving'],
+    weakSubjects: ['History', 'Art'],
+    quizHistory: [],
+    paymentHistory: [],
+  },
+  {
+    id: '2',
+    email: 'student2@example.com',
+    name: 'John Doe',
+    role: 'student',
+    age: 22,
+    interests: ['Business', 'Economics'],
+    strengths: ['Communication', 'Leadership'],
+    weakSubjects: ['Mathematics', 'Physics'],
+    quizHistory: [],
+    paymentHistory: [],
+  },
+  {
+    id: '3',
+    email: 'student3@example.com',
+    name: 'Alex Johnson',
+    role: 'student',
+    age: 20,
+    interests: ['Art', 'Literature'],
+    strengths: ['Creativity', 'Writing'],
+    weakSubjects: ['Chemistry', 'Biology'],
+    quizHistory: [],
+    paymentHistory: [],
+  },
+  {
+    id: '4',
+    email: 'student4@example.com',
+    name: 'Emily Chen',
+    role: 'student',
+    age: 21,
+    interests: ['Engineering', 'Design'],
+    strengths: ['Analytical thinking', 'Mathematics'],
+    weakSubjects: ['Literature', 'Geography'],
+    quizHistory: [],
+    paymentHistory: [],
+  },
+  {
+    id: '5',
+    email: 'student5@example.com',
+    name: 'Michael Brown',
+    role: 'student',
+    age: 23,
+    interests: ['Psychology', 'Sociology'],
+    strengths: ['Research', 'Analysis'],
+    weakSubjects: ['Economics', 'Chemistry'],
+    quizHistory: [],
+    paymentHistory: [],
+  },
+];
+
+// Sample payment data
+const MOCK_PAYMENTS: Payment[] = [
+  {
+    id: '1',
+    userId: '1',
+    amount: 9.99,
+    status: 'completed',
+    createdAt: new Date(2025, 3, 1),
+    quizSessionId: '101',
+  },
+  {
+    id: '2',
+    userId: '2',
+    amount: 9.99,
+    status: 'completed',
+    createdAt: new Date(2025, 3, 2),
+    quizSessionId: '102',
+  },
+  {
+    id: '3',
+    userId: '3',
+    amount: 9.99,
+    status: 'completed',
+    createdAt: new Date(2025, 3, 3),
+    quizSessionId: '103',
+  },
+  {
+    id: '4',
+    userId: '1',
+    amount: 9.99,
+    status: 'completed',
+    createdAt: new Date(2025, 3, 5),
+    quizSessionId: '104',
+  },
+  {
+    id: '5',
+    userId: '4',
+    amount: 9.99,
+    status: 'completed',
+    createdAt: new Date(2025, 3, 7),
+  },
+  {
+    id: '6',
+    userId: '5',
+    amount: 9.99,
+    status: 'pending',
+    createdAt: new Date(2025, 3, 8),
+  },
+  {
+    id: '7',
+    userId: '2',
+    amount: 9.99,
+    status: 'failed',
+    createdAt: new Date(2025, 3, 8),
+  },
+];
+
+// Sample quiz results
+const MOCK_RESULTS: QuizResult[] = [
+  {
+    id: '1',
+    userId: '1',
+    quizSessionId: '101',
+    score: 85,
+    totalQuestions: 10,
+    completedAt: new Date(2025, 3, 1),
+    feedback: {
+      strengths: ['Numerical reasoning', 'Logical thinking'],
+      weakAreas: ['Verbal comprehension', 'Abstract reasoning'],
+      personalitySummary: 'You appear to be analytical and detail-oriented, with a methodical approach to problem-solving.',
+      careerSuggestions: ['Data Science', 'Software Engineering', 'Actuarial Science', 'Financial Analysis', 'Research'],
+    },
+  },
+  {
+    id: '2',
+    userId: '2',
+    quizSessionId: '102',
+    score: 78,
+    totalQuestions: 10,
+    completedAt: new Date(2025, 3, 2),
+    feedback: {
+      strengths: ['Communication', 'Social awareness'],
+      weakAreas: ['Technical analysis', 'Mathematical concepts'],
+      personalitySummary: 'You exhibit strong interpersonal skills and emotional intelligence, with a natural ability to connect with others.',
+      careerSuggestions: ['Marketing', 'Human Resources', 'Public Relations', 'Sales', 'Teaching'],
+    },
+  },
+  {
+    id: '3',
+    userId: '3',
+    quizSessionId: '103',
+    score: 92,
+    totalQuestions: 10,
+    completedAt: new Date(2025, 3, 3),
+    feedback: {
+      strengths: ['Creative thinking', 'Pattern recognition'],
+      weakAreas: ['Structured analysis', 'Quantitative reasoning'],
+      personalitySummary: 'You demonstrate exceptional creative abilities and out-of-the-box thinking, with a talent for innovation.',
+      careerSuggestions: ['Graphic Design', 'Content Creation', 'Product Design', 'Architecture', 'Art Direction'],
+    },
+  },
+  {
+    id: '4',
+    userId: '1',
+    quizSessionId: '104',
+    score: 88,
+    totalQuestions: 10,
+    completedAt: new Date(2025, 3, 5),
+    feedback: {
+      strengths: ['Critical analysis', 'Problem solving'],
+      weakAreas: ['Creative expression', 'Verbal communication'],
+      personalitySummary: 'You have a sharp analytical mind with excellent problem-solving abilities and attention to detail.',
+      careerSuggestions: ['Engineering', 'Systems Analysis', 'Quality Assurance', 'Scientific Research', 'Technical Writing'],
+    },
+  },
+];
+
 interface QuizContextType {
   categories: Category[];
   questions: Question[];
@@ -170,6 +350,8 @@ interface QuizContextType {
   currentQuizSession: QuizSession | null;
   quizResults: QuizResult[];
   payments: Payment[];
+  students: Student[];
+  getStudentById: (id: string) => Student | undefined;
   setQuizInfo: (info: QuizInfo) => void;
   addCategory: (category: Omit<Category, 'id' | 'createdBy' | 'questionCount'>) => void;
   updateCategory: (category: Category) => void;
@@ -190,6 +372,8 @@ const QuizContext = createContext<QuizContextType>({
   currentQuizSession: null,
   quizResults: [],
   payments: [],
+  students: [],
+  getStudentById: () => undefined,
   setQuizInfo: () => {},
   addCategory: () => {},
   updateCategory: () => {},
@@ -214,8 +398,14 @@ export const QuizProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [questions, setQuestions] = useState<Question[]>(MOCK_QUESTIONS);
   const [quizInfo, setQuizInfo] = useState<QuizInfo | null>(null);
   const [currentQuizSession, setCurrentQuizSession] = useState<QuizSession | null>(null);
-  const [quizResults, setQuizResults] = useState<QuizResult[]>([]);
-  const [payments, setPayments] = useState<Payment[]>([]);
+  const [quizResults, setQuizResults] = useState<QuizResult[]>(MOCK_RESULTS);
+  const [payments, setPayments] = useState<Payment[]>(MOCK_PAYMENTS);
+  const [students, setStudents] = useState<Student[]>(MOCK_STUDENTS);
+  
+  // Get student by ID
+  const getStudentById = (id: string) => {
+    return students.find(student => student.id === id);
+  };
   
   // Security check for quiz sessions
   const getQuizSessionSecurityStatus = () => {
@@ -488,11 +678,23 @@ export const QuizProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setQuizResults([...quizResults, result]);
     
     // Update user's quiz history if user is a student
-    if (user.role === 'student' && 'quizHistory' in user) {
+    if (user.role === 'student') {
+      // Find the student in our mock data
+      const studentIndex = students.findIndex(s => s.id === user.id);
+      if (studentIndex >= 0) {
+        const updatedStudents = [...students];
+        updatedStudents[studentIndex] = {
+          ...updatedStudents[studentIndex],
+          quizHistory: [...(updatedStudents[studentIndex].quizHistory || []), result]
+        };
+        setStudents(updatedStudents);
+      }
+      
+      // Also update the user profile
       const updatedUser = {
         ...user,
         quizHistory: [...(user.quizHistory || []), result]
-      };
+      } as Student;
       updateUserProfile(updatedUser);
     }
     
@@ -669,11 +871,23 @@ export const QuizProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setPayments([...payments, newPayment]);
     
     // Update user's payment history if user is a student
-    if (user.role === 'student' && 'paymentHistory' in user) {
+    if (user.role === 'student') {
+      // Find the student in our mock data
+      const studentIndex = students.findIndex(s => s.id === user.id);
+      if (studentIndex >= 0) {
+        const updatedStudents = [...students];
+        updatedStudents[studentIndex] = {
+          ...updatedStudents[studentIndex],
+          paymentHistory: [...(updatedStudents[studentIndex].paymentHistory || []), newPayment]
+        };
+        setStudents(updatedStudents);
+      }
+      
+      // Also update the user profile
       const updatedUser = {
         ...user,
         paymentHistory: [...(user.paymentHistory || []), newPayment]
-      };
+      } as Student;
       updateUserProfile(updatedUser);
     }
     
@@ -712,6 +926,7 @@ export const QuizProvider: React.FC<{ children: React.ReactNode }> = ({ children
     currentQuizSession,
     quizResults,
     payments,
+    students,
     setQuizInfo,
     addCategory,
     updateCategory,
@@ -723,6 +938,7 @@ export const QuizProvider: React.FC<{ children: React.ReactNode }> = ({ children
     submitQuiz,
     processPayment,
     getQuizSessionSecurityStatus,
+    getStudentById,
   };
   
   return <QuizContext.Provider value={value}>{children}</QuizContext.Provider>;
