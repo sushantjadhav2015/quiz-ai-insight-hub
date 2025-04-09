@@ -24,7 +24,7 @@ type LoginFormData = z.infer<typeof loginSchema>;
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login, isAdmin } = useAuth();
   
   const {
     register,
@@ -41,7 +41,13 @@ const Login: React.FC = () => {
   const loginMutation = useMutation({
     mutationFn: (data: LoginFormData) => login(data.email, data.password),
     onSuccess: () => {
-      navigate('/dashboard');
+      // Check if user is admin and redirect accordingly
+      if (isAdmin) {
+        navigate('/admin/dashboard');
+      } else {
+        // For students, redirect to history page
+        navigate('/history');
+      }
     },
     onError: (error: Error) => {
       toast({

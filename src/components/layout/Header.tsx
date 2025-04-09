@@ -12,10 +12,10 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Brain } from 'lucide-react';
+import { Brain, History } from 'lucide-react';
 
 const Header: React.FC = () => {
-  const { user, isLoading, logout, isAdmin } = useAuth();
+  const { user, isLoading, logout, isAdmin, isStudent } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   
@@ -42,13 +42,20 @@ const Header: React.FC = () => {
           
           {user && (
             <nav className="hidden md:flex ml-8 space-x-4">
-              {!isAdmin && (
+              {isStudent && (
                 <>
                   <Button
                     variant={isActive('/dashboard') ? 'default' : 'ghost'}
                     onClick={() => navigate('/dashboard')}
                   >
                     Dashboard
+                  </Button>
+                  <Button
+                    variant={isActive('/history') ? 'default' : 'ghost'}
+                    onClick={() => navigate('/history')}
+                  >
+                    <History className="h-4 w-4 mr-2" />
+                    History
                   </Button>
                   <Button
                     variant={isActive('/quiz/info') ? 'default' : 'ghost'}
@@ -114,6 +121,11 @@ const Header: React.FC = () => {
                 <DropdownMenuItem onClick={() => navigate(isAdmin ? '/admin/dashboard' : '/dashboard')}>
                   Dashboard
                 </DropdownMenuItem>
+                {isStudent && (
+                  <DropdownMenuItem onClick={() => navigate('/history')}>
+                    History
+                  </DropdownMenuItem>
+                )}
                 <DropdownMenuItem onClick={() => navigate('/profile')}>
                   Profile
                 </DropdownMenuItem>

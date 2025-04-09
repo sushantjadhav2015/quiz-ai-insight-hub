@@ -52,12 +52,17 @@ export const useAuth = () => useContext(AuthContext);
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [isStudent, setIsStudent] = useState(false);
 
   // Check if user is already logged in (from localStorage in this demo)
   useEffect(() => {
     const storedUser = localStorage.getItem('quizUser');
     if (storedUser) {
-      setUser(JSON.parse(storedUser));
+      const parsedUser = JSON.parse(storedUser);
+      setUser(parsedUser);
+      setIsAdmin(parsedUser.role === 'admin');
+      setIsStudent(parsedUser.role === 'student');
     }
     setIsLoading(false);
   }, []);
@@ -69,6 +74,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     
     if (foundUser && password === 'password') { // Simple password check for demo
       setUser(foundUser);
+      setIsAdmin(foundUser.role === 'admin');
+      setIsStudent(foundUser.role === 'student');
       localStorage.setItem('quizUser', JSON.stringify(foundUser));
       toast({
         title: "Login successful",
@@ -138,8 +145,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const value = {
     user,
     isLoading,
-    isAdmin: user?.role === 'admin',
-    isStudent: user?.role === 'student',
+    isAdmin,
+    isStudent,
     login,
     register,
     logout,
