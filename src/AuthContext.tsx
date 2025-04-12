@@ -1,7 +1,10 @@
+
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { User, Admin, Student } from "./types";
+import { User, Student } from "./types";
 import { toast } from "./components/ui/use-toast";
 import { useNavigate } from "react-router-dom";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { loginUser, registerUser, updateUserProfile } from "./api";
 
 interface AuthContextType {
   user: User | null;
@@ -13,28 +16,6 @@ interface AuthContextType {
   logout: () => void;
   updateUserProfile: (userData: Partial<Student>) => Promise<void>;
 }
-
-// Mock users for demo purposes
-const MOCK_USERS: User[] = [
-  {
-    id: "1",
-    email: "admin@example.com",
-    name: "Admin User",
-    role: "admin",
-  } as Admin,
-  {
-    id: "2",
-    email: "student@example.com",
-    name: "Student User",
-    role: "student",
-    age: 18,
-    interests: ["Technology", "Science"],
-    strengths: ["Problem Solving", "Creativity"],
-    weakSubjects: ["History", "Literature"],
-    quizHistory: [],
-    paymentHistory: [],
-  } as Student,
-];
 
 const AuthContext = createContext<AuthContextType>({
   user: null,
@@ -55,6 +36,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isAdmin, setIsAdmin] = useState(false);
   const [isStudent, setIsStudent] = useState(false);
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   // Check if user is already logged in (from localStorage in this demo)
   useEffect(() => {
@@ -68,92 +50,93 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setIsLoading(false);
   }, []);
 
-  const login = async (email: string, password: string) => {
-    // In a real app, you would validate with an API
-    // For demo, we'll just check against our mock users
-    const foundUser = MOCK_USERS.find((u) => u.email === email);
-
-    if (foundUser && password === "password") {
-      // Simple password check for demo
-      setUser(foundUser);
-      setIsAdmin(foundUser.role === "admin");
-      setIsStudent(foundUser.role === "student");
-      localStorage.setItem("quizUser", JSON.stringify(foundUser));
+  // Login mutation
+  const loginMutation = useMutation({
+    mutationFn: ({ email, password }: { email: string; password: string }) => 
+      loginUser(email, password),
+    onSuccess: (user) => {
+      setUser(user);
+      setIsAdmin(user.role === "admin");
+      setIsStudent(user.role === "student");
+      localStorage.setItem("quizUser", JSON.stringify(user));
       toast({
         title: "Login successful",
-        description: `Welcome back, ${foundUser.name}!`,
+        description: `Welcome back, ${user.name}!`,
       });
-    } else {
-      throw new Error("Invalid credentials");
-    }
+    },
+  });
+
+  // Register mutation
+  const registerMutation = useMutation({
+    mutationFn: ({ name, email, password }: { name: string; email: string; password: string }) => 
+      registerUser(name, email, password),
+    onSuccess: (user) => {
+      setUser(user);
+      setIsAdmin(user.role === "admin");
+      setIsStudent(user.role === "student");
+      localStorage.setItem("quizUser", JSON.stringify(user));
+      toast({
+        title: "Registration successful",
+        description: `Welcome, ${user.name}!`,
+      });
+    },
+  });
+
+  // Update user profile mutation
+  const updateProfileMutation = useMutation({
+    mutationFn: ({ userId, userData }: { userId: string; userData: Partial<Student> }) => 
+      updateUserProfile(userId, userData),
+    onSuccess: (updatedUser) => {
+      setUser(updatedUser);
+      localStorage.setItem("quizUser", JSON.stringify(updatedUser));
+      toast({
+        title: "Profile updated",
+        description: "Your profile has been updated successfully.",
+      });
+      // Invalidate any queries that might depend on user data
+      queryClient.invalidateQueries({ queryKey: ["user"] });
+    },
+  });
+
+  const login = async (email: string, password: string) => {
+    await loginMutation.mutateAsync({ email, password });
   };
 
   const register = async (name: string, email: string, password: string) => {
-    // Check if email already exists
-    if (MOCK_USERS.some((u) => u.email === email)) {
-      throw new Error("Email already registered");
-    }
-
-    // Create a new student user
-    const newUser: Student = {
-      id: (MOCK_USERS.length + 1).toString(),
-      email,
-      name,
-      role: "student",
-      quizHistory: [],
-      paymentHistory: [],
-    };
-
-    // In a real app, you would send this to your API
-    // For demo, we'll just add to our mock users and set as current
-    MOCK_USERS.push(newUser);
-    setUser(newUser);
-    localStorage.setItem("quizUser", JSON.stringify(newUser));
-
-    toast({
-      title: "Registration successful",
-      description: `Welcome, ${name}!`,
-    });
+    await registerMutation.mutateAsync({ name, email, password });
   };
 
   const logout = () => {
     setUser(null);
+    setIsAdmin(false);
+    setIsStudent(false);
     localStorage.removeItem("quizUser");
     toast({
       title: "Logged out",
       description: "You have been successfully logged out.",
     });
     navigate("/");
+    // Clear any user-related queries from the cache
+    queryClient.invalidateQueries();
   };
 
-  const updateUserProfile = async (userData: Partial<Student>) => {
+  const updateProfile = async (userData: Partial<Student>) => {
     if (!user) return;
-
-    const updatedUser = { ...user, ...userData };
-    setUser(updatedUser);
-    localStorage.setItem("quizUser", JSON.stringify(updatedUser));
-
-    // In a real app, you would update this in your backend API
-    const userIndex = MOCK_USERS.findIndex((u) => u.id === user.id);
-    if (userIndex >= 0) {
-      MOCK_USERS[userIndex] = updatedUser;
-    }
-
-    toast({
-      title: "Profile updated",
-      description: "Your profile has been updated successfully.",
+    await updateProfileMutation.mutateAsync({ 
+      userId: user.id, 
+      userData 
     });
   };
 
   const value = {
     user,
-    isLoading,
+    isLoading: isLoading || loginMutation.isPending || registerMutation.isPending,
     isAdmin,
     isStudent,
     login,
     register,
     logout,
-    updateUserProfile,
+    updateUserProfile: updateProfile,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

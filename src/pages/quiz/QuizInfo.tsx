@@ -1,9 +1,8 @@
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useForm, Controller } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
+import { useForm } from 'react-hook-form';
+import { useMutation } from '@tanstack/react-query';
 import { useAuth } from '@/AuthContext';
 import { useQuiz } from '@/QuizContext';
 import Layout from '@/components/layout/Layout';
@@ -15,20 +14,18 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { PenTool, ArrowRight } from 'lucide-react';
 import { Student } from '@/types';
 
-// Define the schema for the quiz info form
-const quizInfoSchema = z.object({
-  age: z.coerce.number().min(10, "Age must be at least 10").max(100, "Age must be at most 100"),
-  interests: z.string().min(3, "Please enter at least one interest"),
-  strengths: z.string().min(3, "Please enter at least one strength"),
-  weakSubjects: z.string().min(3, "Please enter at least one weak subject"),
-});
-
-type QuizInfoFormData = z.infer<typeof quizInfoSchema>;
+interface QuizInfoFormData {
+  age: number | '';
+  interests: string;
+  strengths: string;
+  weakSubjects: string;
+}
 
 const QuizInfo: React.FC = () => {
   const navigate = useNavigate();
   const { user, isLoading, isStudent, updateUserProfile } = useAuth();
   const { setQuizInfo } = useQuiz();
+  const [formError, setFormError] = useState<string | null>(null);
   
   // Redirect if not logged in or not a student
   useEffect(() => {
@@ -42,40 +39,62 @@ const QuizInfo: React.FC = () => {
   const {
     register,
     handleSubmit,
-    control,
     formState: { errors },
   } = useForm<QuizInfoFormData>({
-    resolver: zodResolver(quizInfoSchema),
     defaultValues: {
-      age: studentUser?.age || undefined,
+      age: studentUser?.age || '',
       interests: studentUser?.interests?.join(', ') || '',
       strengths: studentUser?.strengths?.join(', ') || '',
       weakSubjects: studentUser?.weakSubjects?.join(', ') || '',
     },
   });
   
+  const updateProfileMutation = useMutation({
+    mutationFn: (data: QuizInfoFormData) => {
+      // Transform the data
+      const formattedQuizInfo = {
+        age: typeof data.age === 'string' ? parseInt(data.age) : data.age,
+        interests: data.interests.split(',').map(item => item.trim()),
+        strengths: data.strengths.split(',').map(item => item.trim()),
+        weakSubjects: data.weakSubjects.split(',').map(item => item.trim()),
+      };
+      
+      // Save to quiz context
+      setQuizInfo(formattedQuizInfo);
+      
+      // Update user profile
+      return updateUserProfile({
+        age: formattedQuizInfo.age,
+        interests: formattedQuizInfo.interests,
+        strengths: formattedQuizInfo.strengths,
+        weakSubjects: formattedQuizInfo.weakSubjects,
+      });
+    },
+    onSuccess: () => {
+      // Navigate to payment page
+      navigate('/quiz/payment');
+    },
+    onError: (error: Error) => {
+      setFormError(error.message);
+    }
+  });
+  
   const onSubmit = (data: QuizInfoFormData) => {
-    // Transform the data for the quiz context
-    const formattedQuizInfo = {
-      age: data.age,
-      interests: data.interests.split(',').map(item => item.trim()),
-      strengths: data.strengths.split(',').map(item => item.trim()),
-      weakSubjects: data.weakSubjects.split(',').map(item => item.trim()),
-    };
-    
-    // Save to quiz context
-    setQuizInfo(formattedQuizInfo);
-    
-    // Update user profile
-    updateUserProfile({
-      age: data.age,
-      interests: formattedQuizInfo.interests,
-      strengths: formattedQuizInfo.strengths,
-      weakSubjects: formattedQuizInfo.weakSubjects,
-    });
-    
-    // Navigate to payment page
-    navigate('/quiz/payment');
+    setFormError(null);
+    updateProfileMutation.mutate(data);
+  };
+
+  const validateAge = (value: number | '') => {
+    if (value === '') return "Age is required";
+    if (value < 10) return "Age must be at least 10";
+    if (value > 100) return "Age must be at most 100";
+    return true;
+  };
+
+  const validateText = (value: string, fieldName: string) => {
+    if (!value.trim()) return `${fieldName} is required`;
+    if (value.trim().length < 3) return `Please enter at least one ${fieldName.toLowerCase()}`;
+    return true;
   };
   
   if (isLoading || !user || !isStudent) {
@@ -175,7 +194,11 @@ const QuizInfo: React.FC = () => {
                     <Input
                       id="age"
                       type="number"
-                      {...register('age')}
+                      {...register('age', { 
+                        required: "Age is required",
+                        valueAsNumber: true,
+                        validate: validateAge
+                      })}
                     />
                     {errors.age && (
                       <p className="text-sm text-destructive">{errors.age.message}</p>
@@ -189,7 +212,10 @@ const QuizInfo: React.FC = () => {
                     <Textarea
                       id="interests"
                       placeholder="Technology, Science, Art, Music, Sports..."
-                      {...register('interests')}
+                      {...register('interests', { 
+                        required: "Interests are required",
+                        validate: (value) => validateText(value, "Interests")
+                      })}
                     />
                     {errors.interests && (
                       <p className="text-sm text-destructive">{errors.interests.message}</p>
@@ -203,7 +229,10 @@ const QuizInfo: React.FC = () => {
                     <Textarea
                       id="strengths"
                       placeholder="Problem solving, Creativity, Communication, Leadership..."
-                      {...register('strengths')}
+                      {...register('strengths', { 
+                        required: "Strengths are required",
+                        validate: (value) => validateText(value, "Strengths")
+                      })}
                     />
                     {errors.strengths && (
                       <p className="text-sm text-destructive">{errors.strengths.message}</p>
@@ -217,16 +246,29 @@ const QuizInfo: React.FC = () => {
                     <Textarea
                       id="weakSubjects"
                       placeholder="Math, Writing, Public speaking, History..."
-                      {...register('weakSubjects')}
+                      {...register('weakSubjects', { 
+                        required: "This field is required",
+                        validate: (value) => validateText(value, "Areas to improve")
+                      })}
                     />
                     {errors.weakSubjects && (
                       <p className="text-sm text-destructive">{errors.weakSubjects.message}</p>
                     )}
                   </div>
                   
-                  <Button type="submit" className="w-full">
-                    Continue to Payment
-                    <ArrowRight className="ml-2 h-4 w-4" />
+                  <Button 
+                    type="submit" 
+                    className="w-full"
+                    disabled={updateProfileMutation.isPending}
+                  >
+                    {updateProfileMutation.isPending ? (
+                      <>Processing...</>
+                    ) : (
+                      <>
+                        Continue to Payment
+                        <ArrowRight className="ml-2 h-4 w-4" />
+                      </>
+                    )}
                   </Button>
                 </form>
               </CardContent>

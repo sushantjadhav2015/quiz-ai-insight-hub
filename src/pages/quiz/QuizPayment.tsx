@@ -9,11 +9,12 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Loader2, Zap, ArrowRight, CheckCircle, Lock, CreditCard } from 'lucide-react';
 import { toast } from '@/components/ui/use-toast';
+import { processPayment } from '@/api';
 
 const QuizPayment: React.FC = () => {
   const navigate = useNavigate();
   const { user, isLoading, isStudent } = useAuth();
-  const { quizInfo, processPayment } = useQuiz();
+  const { quizInfo } = useQuiz();
   
   // Redirect if not logged in, not a student, or no quiz info
   useEffect(() => {
@@ -27,7 +28,10 @@ const QuizPayment: React.FC = () => {
   }, [user, isLoading, isStudent, quizInfo, navigate]);
   
   const paymentMutation = useMutation({
-    mutationFn: processPayment,
+    mutationFn: () => {
+      if (!user) throw new Error("User not authenticated");
+      return processPayment(user.id);
+    },
     onSuccess: () => {
       toast({
         title: "Payment successful",

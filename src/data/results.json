@@ -1,0 +1,59 @@
+
+[
+  {
+    "id": "1",
+    "userId": "1",
+    "quizSessionId": "101",
+    "score": 85,
+    "totalQuestions": 10,
+    "completedAt": "2025-04-01T00:00:00.000Z",
+    "feedback": {
+      "strengths": ["Numerical reasoning", "Logical thinking"],
+      "weakAreas": ["Verbal comprehension", "Abstract reasoning"],
+      "personalitySummary": "You appear to be analytical and detail-oriented, with a methodical approach to problem-solving.",
+      "careerSuggestions": ["Data Science", "Software Engineering", "Actuarial Science", "Financial Analysis", "Research"]
+    }
+  },
+  {
+    "id": "2",
+    "userId": "2",
+    "quizSessionId": "102",
+    "score": 78,
+    "totalQuestions": 10,
+    "completedAt": "2025-04-02T00:00:00.000Z",
+    "feedback": {
+      "strengths": ["Communication", "Social awareness"],
+      "weakAreas": ["Technical analysis", "Mathematical concepts"],
+      "personalitySummary": "You exhibit strong interpersonal skills and emotional intelligence, with a natural ability to connect with others.",
+      "careerSuggestions": ["Marketing", "Human Resources", "Public Relations", "Sales", "Teaching"]
+    }
+  },
+  {
+    "id": "3",
+    "userId": "3",
+    "quizSessionId": "103",
+    "score": 92,
+    "totalQuestions": 10,
+    "completedAt": "2025-04-03T00:00:00.000Z",
+    "feedback": {
+      "strengths": ["Creative thinking", "Pattern recognition"],
+      "weakAreas": ["Structured analysis", "Quantitative reasoning"],
+      "personalitySummary": "You demonstrate exceptional creative abilities and out-of-the-box thinking, with a talent for innovation.",
+      "careerSuggestions": ["Graphic Design", "Content Creation", "Product Design", "Architecture", "Art Direction"]
+    }
+  },
+  {
+    "id": "4",
+    "userId": "1",
+    "quizSessionId": "104",
+    "score": 88,
+    "totalQuestions": 10,
+    "completedAt": "2025-04-05T00:00:00.000Z",
+    "feedback": {
+      "strengths": ["Critical analysis", "Problem solving"],
+      "weakAreas": ["Creative expression", "Verbal communication"],
+      "personalitySummary": "You have a sharp analytical mind with excellent problem-solving abilities and attention to detail.",
+      "careerSuggestions": ["Engineering", "Systems Analysis", "Quality Assurance", "Scientific Research", "Technical Writing"]
+    }
+  }
+]

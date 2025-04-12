@@ -1,9 +1,7 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
 import { useMutation } from '@tanstack/react-query';
 import { useAuth } from '@/AuthContext';
 import Layout from '@/components/layout/Layout';
@@ -15,31 +13,25 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Brain, Loader2 } from 'lucide-react';
 
-const registerSchema = z.object({
-  name: z.string().min(2, { message: 'Name must be at least 2 characters' }),
-  email: z.string().email({ message: 'Please enter a valid email address' }),
-  password: z.string().min(6, { message: 'Password must be at least 6 characters' }),
-  confirmPassword: z.string(),
-  termsAccepted: z.boolean().refine(val => val === true, {
-    message: 'You must accept the terms and conditions',
-  }),
-}).refine(data => data.password === data.confirmPassword, {
-  message: 'Passwords do not match',
-  path: ['confirmPassword'],
-});
-
-type RegisterFormData = z.infer<typeof registerSchema>;
+interface RegisterFormData {
+  name: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+  termsAccepted: boolean;
+}
 
 const Register: React.FC = () => {
   const navigate = useNavigate();
   const { register: registerUser } = useAuth();
+  const [formError, setFormError] = useState<string | null>(null);
   
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors },
   } = useForm<RegisterFormData>({
-    resolver: zodResolver(registerSchema),
     defaultValues: {
       name: '',
       email: '',
@@ -49,15 +41,33 @@ const Register: React.FC = () => {
     },
   });
   
+  const watchPassword = watch("password");
+  
   const registerMutation = useMutation({
     mutationFn: (data: RegisterFormData) => registerUser(data.name, data.email, data.password),
     onSuccess: () => {
       navigate('/dashboard');
     },
+    onError: (error: Error) => {
+      setFormError(error.message);
+    }
   });
   
   const onSubmit = (data: RegisterFormData) => {
+    setFormError(null);
     registerMutation.mutate(data);
+  };
+
+  const validateEmail = (value: string) => {
+    return /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(value) || "Please enter a valid email address";
+  };
+  
+  const validatePassword = (value: string) => {
+    return value.length >= 6 || "Password must be at least 6 characters";
+  };
+  
+  const validateConfirmPassword = (value: string) => {
+    return value === watchPassword || "Passwords do not match";
   };
   
   return (
@@ -83,10 +93,10 @@ const Register: React.FC = () => {
           <CardContent>
             <form onSubmit={handleSubmit(onSubmit)}>
               <div className="grid gap-4">
-                {registerMutation.error && (
+                {formError && (
                   <Alert variant="destructive">
                     <AlertDescription>
-                      {(registerMutation.error as Error).message}
+                      {formError}
                     </AlertDescription>
                   </Alert>
                 )}
@@ -96,7 +106,10 @@ const Register: React.FC = () => {
                   <Input
                     id="name"
                     placeholder="John Doe"
-                    {...register('name')}
+                    {...register('name', { 
+                      required: "Name is required",
+                      minLength: { value: 2, message: "Name must be at least 2 characters" }
+                    })}
                   />
                   {errors.name && (
                     <p className="text-sm text-destructive">{errors.name.message}</p>
@@ -109,7 +122,10 @@ const Register: React.FC = () => {
                     id="email"
                     type="email"
                     placeholder="you@example.com"
-                    {...register('email')}
+                    {...register('email', { 
+                      required: "Email is required",
+                      validate: validateEmail
+                    })}
                   />
                   {errors.email && (
                     <p className="text-sm text-destructive">{errors.email.message}</p>
@@ -121,7 +137,10 @@ const Register: React.FC = () => {
                   <Input
                     id="password"
                     type="password"
-                    {...register('password')}
+                    {...register('password', { 
+                      required: "Password is required",
+                      validate: validatePassword
+                    })}
                   />
                   {errors.password && (
                     <p className="text-sm text-destructive">{errors.password.message}</p>
@@ -133,7 +152,10 @@ const Register: React.FC = () => {
                   <Input
                     id="confirmPassword"
                     type="password"
-                    {...register('confirmPassword')}
+                    {...register('confirmPassword', { 
+                      required: "Please confirm your password",
+                      validate: validateConfirmPassword
+                    })}
                   />
                   {errors.confirmPassword && (
                     <p className="text-sm text-destructive">{errors.confirmPassword.message}</p>
@@ -141,7 +163,12 @@ const Register: React.FC = () => {
                 </div>
                 
                 <div className="flex items-center space-x-2">
-                  <Checkbox id="termsAccepted" {...register('termsAccepted')} />
+                  <Checkbox 
+                    id="termsAccepted" 
+                    {...register('termsAccepted', { 
+                      required: "You must accept the terms and conditions" 
+                    })} 
+                  />
                   <label
                     htmlFor="termsAccepted"
                     className="text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"

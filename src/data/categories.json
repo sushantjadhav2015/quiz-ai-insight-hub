@@ -1,0 +1,38 @@
+
+[
+  {
+    "id": "1",
+    "name": "Aptitude",
+    "description": "Assess your logical and numerical abilities",
+    "createdBy": "1",
+    "questionCount": 20
+  },
+  {
+    "id": "2",
+    "name": "Logical Reasoning",
+    "description": "Test your critical thinking and problem-solving skills",
+    "createdBy": "1",
+    "questionCount": 15
+  },
+  {
+    "id": "3",
+    "name": "Personality",
+    "description": "Discover your personality traits and preferences",
+    "createdBy": "1",
+    "questionCount": 25
+  },
+  {
+    "id": "4",
+    "name": "Subject Interest",
+    "description": "Find out which subjects align with your interests",
+    "createdBy": "1",
+    "questionCount": 18
+  },
+  {
+    "id": "5",
+    "name": "Situational Judgement",
+    "description": "Evaluate your decision-making in real-world scenarios",
+    "createdBy": "1",
+    "questionCount": 12
+  }
+]

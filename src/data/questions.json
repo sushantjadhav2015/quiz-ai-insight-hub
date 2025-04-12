@@ -1,0 +1,118 @@
+
+[
+  {
+    "id": "1",
+    "categoryId": "1",
+    "text": "If 5x + 3 = 18, what is the value of x?",
+    "options": ["2", "3", "4", "5"],
+    "correctOption": 1,
+    "difficulty": "medium"
+  },
+  {
+    "id": "2",
+    "categoryId": "1",
+    "text": "A train traveling at 60 mph takes 2 hours to reach its destination. How far is the destination?",
+    "options": ["30 miles", "60 miles", "90 miles", "120 miles"],
+    "correctOption": 3,
+    "difficulty": "easy"
+  },
+  {
+    "id": "3",
+    "categoryId": "2",
+    "text": "Complete the sequence: 2, 4, 8, 16, __",
+    "options": ["24", "32", "36", "64"],
+    "correctOption": 1,
+    "difficulty": "easy"
+  },
+  {
+    "id": "4",
+    "categoryId": "2",
+    "text": "If all roses are flowers and some flowers fade quickly, which statement must be true?",
+    "options": [
+      "All roses fade quickly",
+      "Some roses fade quickly",
+      "No roses fade quickly",
+      "None of the above"
+    ],
+    "correctOption": 1,
+    "difficulty": "medium"
+  },
+  {
+    "id": "5",
+    "categoryId": "3",
+    "text": "In a social setting, you usually prefer to:",
+    "options": [
+      "Meet new people and start conversations",
+      "Talk with a few people you already know",
+      "Observe the interactions of others",
+      "Avoid social gatherings when possible"
+    ],
+    "correctOption": 0,
+    "difficulty": "easy"
+  },
+  {
+    "id": "6",
+    "categoryId": "3",
+    "text": "When facing a difficult problem, your first instinct is to:",
+    "options": [
+      "Analyze it methodically step by step",
+      "Look for creative, unconventional solutions",
+      "Consult others for their perspective",
+      "Trust your intuition and feelings about it"
+    ],
+    "correctOption": 0,
+    "difficulty": "easy"
+  },
+  {
+    "id": "7",
+    "categoryId": "4",
+    "text": "Which of these activities would you most enjoy as a career?",
+    "options": [
+      "Conducting scientific research",
+      "Creating artistic works",
+      "Managing a team of people",
+      "Working with technology and programming"
+    ],
+    "correctOption": 0,
+    "difficulty": "easy"
+  },
+  {
+    "id": "8",
+    "categoryId": "4",
+    "text": "Which subject do you find most engaging to learn about?",
+    "options": [
+      "History and culture",
+      "Mathematics and logic",
+      "Literature and language",
+      "Biology and natural sciences"
+    ],
+    "correctOption": 0,
+    "difficulty": "easy"
+  },
+  {
+    "id": "9",
+    "categoryId": "5",
+    "text": "Your team member consistently submits work late, affecting the project. What would you do?",
+    "options": [
+      "Report them to management immediately",
+      "Discuss the issue privately with them first",
+      "Take over their responsibilities without saying anything",
+      "Ask other team members how to handle it"
+    ],
+    "correctOption": 1,
+    "difficulty": "medium"
+  },
+  {
+    "id": "10",
+    "categoryId": "5",
+    "text": "You notice a colleague taking office supplies for personal use. How would you respond?",
+    "options": [
+      "Confront them directly in front of others",
+      "Anonymously report the behavior",
+      "Talk to them privately about your concerns",
+      "Ignore it as it doesn't affect you directly"
+    ],
+    "correctOption": 2,
+    "difficulty": "medium"
+  }
+]

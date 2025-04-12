@@ -1,9 +1,7 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
 import { useMutation } from '@tanstack/react-query';
 import { useAuth } from '@/AuthContext';
 import Layout from '@/components/layout/Layout';
@@ -15,23 +13,21 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Brain, Loader2 } from 'lucide-react';
 import { toast } from '@/components/ui/use-toast';
 
-const loginSchema = z.object({
-  email: z.string().email({ message: 'Please enter a valid email address' }),
-  password: z.string().min(6, { message: 'Password must be at least 6 characters' }),
-});
-
-type LoginFormData = z.infer<typeof loginSchema>;
+interface LoginFormData {
+  email: string;
+  password: string;
+}
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
   const { login, isAdmin } = useAuth();
+  const [formError, setFormError] = useState<string | null>(null);
   
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<LoginFormData>({
-    resolver: zodResolver(loginSchema),
     defaultValues: {
       email: '',
       password: '',
@@ -50,6 +46,7 @@ const Login: React.FC = () => {
       }
     },
     onError: (error: Error) => {
+      setFormError(error.message);
       toast({
         title: "Login failed",
         description: error.message,
@@ -59,7 +56,16 @@ const Login: React.FC = () => {
   });
   
   const onSubmit = (data: LoginFormData) => {
+    setFormError(null);
     loginMutation.mutate(data);
+  };
+
+  const validateEmail = (value: string) => {
+    return /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(value) || "Please enter a valid email address";
+  };
+  
+  const validatePassword = (value: string) => {
+    return value.length >= 6 || "Password must be at least 6 characters";
   };
   
   return (
@@ -85,10 +91,10 @@ const Login: React.FC = () => {
           <CardContent>
             <form onSubmit={handleSubmit(onSubmit)}>
               <div className="grid gap-4">
-                {loginMutation.error && (
+                {formError && (
                   <Alert variant="destructive">
                     <AlertDescription>
-                      {loginMutation.error.message}
+                      {formError}
                     </AlertDescription>
                   </Alert>
                 )}
@@ -99,7 +105,10 @@ const Login: React.FC = () => {
                     id="email"
                     type="email"
                     placeholder="you@example.com"
-                    {...register('email')}
+                    {...register('email', { 
+                      required: "Email is required",
+                      validate: validateEmail
+                    })}
                   />
                   {errors.email && (
                     <p className="text-sm text-destructive">{errors.email.message}</p>
@@ -119,7 +128,10 @@ const Login: React.FC = () => {
                   <Input
                     id="password"
                     type="password"
-                    {...register('password')}
+                    {...register('password', { 
+                      required: "Password is required",
+                      validate: validatePassword
+                    })}
                   />
                   {errors.password && (
                     <p className="text-sm text-destructive">{errors.password.message}</p>

@@ -1,0 +1,21 @@
+
+[
+  {
+    "id": "1",
+    "email": "admin@example.com",
+    "name": "Admin User",
+    "role": "admin"
+  },
+  {
+    "id": "2",
+    "email": "student@example.com",
+    "name": "Student User",
+    "role": "student",
+    "age": 18,
+    "interests": ["Technology", "Science"],
+    "strengths": ["Problem Solving", "Creativity"],
+    "weakSubjects": ["History", "Literature"],
+    "quizHistory": [],
+    "paymentHistory": []
+  }
+]
