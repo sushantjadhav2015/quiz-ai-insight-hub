@@ -9,6 +9,19 @@ import { User, Student, Category, Question, QuizResult, Payment, QuizInfo } from
 // Helper for simulating API delay
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
+// Helper to convert string dates to Date objects for Payments
+const convertPaymentData = (payment: any): Payment => ({
+  ...payment,
+  createdAt: new Date(payment.createdAt),
+  status: payment.status as 'pending' | 'completed' | 'failed'
+});
+
+// Helper to convert string dates to Date objects for Quiz Results
+const convertResultData = (result: any): QuizResult => ({
+  ...result,
+  completedAt: new Date(result.completedAt)
+});
+
 // Authentication API
 export const loginUser = async (email: string, password: string): Promise<User> => {
   await delay(500); // Simulate network delay
@@ -209,18 +222,22 @@ export const processPayment = async (userId: string): Promise<Payment> => {
 
 export const getPaymentsByUser = async (userId: string): Promise<Payment[]> => {
   await delay(400);
-  return paymentsData.filter(p => p.userId === userId) as Payment[];
+  return paymentsData
+    .filter(p => p.userId === userId)
+    .map(convertPaymentData);
 };
 
 export const getAllPayments = async (): Promise<Payment[]> => {
   await delay(400);
-  return paymentsData as Payment[];
+  return paymentsData.map(convertPaymentData);
 };
 
 // Results API
 export const getResultsByUser = async (userId: string): Promise<QuizResult[]> => {
   await delay(400);
-  return resultsData.filter(r => r.userId === userId) as QuizResult[];
+  return resultsData
+    .filter(r => r.userId === userId)
+    .map(convertResultData);
 };
 
 export const getResultById = async (id: string): Promise<QuizResult> => {
@@ -231,10 +248,10 @@ export const getResultById = async (id: string): Promise<QuizResult> => {
     throw new Error("Result not found");
   }
   
-  return result as QuizResult;
+  return convertResultData(result);
 };
 
 export const getAllResults = async (): Promise<QuizResult[]> => {
   await delay(400);
-  return resultsData as QuizResult[];
+  return resultsData.map(convertResultData);
 };
