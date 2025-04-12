@@ -2,6 +2,8 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
 import { useMutation } from '@tanstack/react-query';
 import { useAuth } from '@/AuthContext';
 import Layout from '@/components/layout/Layout';
@@ -13,13 +15,21 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Brain, Loader2 } from 'lucide-react';
 
-interface RegisterFormData {
-  name: string;
-  email: string;
-  password: string;
-  confirmPassword: string;
-  termsAccepted: boolean;
-}
+// Define Zod schema for form validation
+const registerSchema = z.object({
+  name: z.string().min(2, 'Name must be at least 2 characters'),
+  email: z.string().email('Please enter a valid email address'),
+  password: z.string().min(6, 'Password must be at least 6 characters'),
+  confirmPassword: z.string().min(1, 'Please confirm your password'),
+  termsAccepted: z.literal(true, {
+    errorMap: () => ({ message: 'You must accept the terms and conditions' }),
+  }),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Passwords do not match",
+  path: ["confirmPassword"],
+});
+
+type RegisterFormData = z.infer<typeof registerSchema>;
 
 const Register: React.FC = () => {
   const navigate = useNavigate();
@@ -32,6 +42,7 @@ const Register: React.FC = () => {
     watch,
     formState: { errors },
   } = useForm<RegisterFormData>({
+    resolver: zodResolver(registerSchema),
     defaultValues: {
       name: '',
       email: '',
@@ -40,8 +51,6 @@ const Register: React.FC = () => {
       termsAccepted: false,
     },
   });
-  
-  const watchPassword = watch("password");
   
   const registerMutation = useMutation({
     mutationFn: (data: RegisterFormData) => registerUser(data.name, data.email, data.password),
@@ -56,18 +65,6 @@ const Register: React.FC = () => {
   const onSubmit = (data: RegisterFormData) => {
     setFormError(null);
     registerMutation.mutate(data);
-  };
-
-  const validateEmail = (value: string) => {
-    return /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(value) || "Please enter a valid email address";
-  };
-  
-  const validatePassword = (value: string) => {
-    return value.length >= 6 || "Password must be at least 6 characters";
-  };
-  
-  const validateConfirmPassword = (value: string) => {
-    return value === watchPassword || "Passwords do not match";
   };
   
   return (
@@ -106,10 +103,7 @@ const Register: React.FC = () => {
                   <Input
                     id="name"
                     placeholder="John Doe"
-                    {...register('name', { 
-                      required: "Name is required",
-                      minLength: { value: 2, message: "Name must be at least 2 characters" }
-                    })}
+                    {...register('name')}
                   />
                   {errors.name && (
                     <p className="text-sm text-destructive">{errors.name.message}</p>
@@ -122,10 +116,7 @@ const Register: React.FC = () => {
                     id="email"
                     type="email"
                     placeholder="you@example.com"
-                    {...register('email', { 
-                      required: "Email is required",
-                      validate: validateEmail
-                    })}
+                    {...register('email')}
                   />
                   {errors.email && (
                     <p className="text-sm text-destructive">{errors.email.message}</p>
@@ -137,10 +128,7 @@ const Register: React.FC = () => {
                   <Input
                     id="password"
                     type="password"
-                    {...register('password', { 
-                      required: "Password is required",
-                      validate: validatePassword
-                    })}
+                    {...register('password')}
                   />
                   {errors.password && (
                     <p className="text-sm text-destructive">{errors.password.message}</p>
@@ -152,10 +140,7 @@ const Register: React.FC = () => {
                   <Input
                     id="confirmPassword"
                     type="password"
-                    {...register('confirmPassword', { 
-                      required: "Please confirm your password",
-                      validate: validateConfirmPassword
-                    })}
+                    {...register('confirmPassword')}
                   />
                   {errors.confirmPassword && (
                     <p className="text-sm text-destructive">{errors.confirmPassword.message}</p>
@@ -165,9 +150,7 @@ const Register: React.FC = () => {
                 <div className="flex items-center space-x-2">
                   <Checkbox 
                     id="termsAccepted" 
-                    {...register('termsAccepted', { 
-                      required: "You must accept the terms and conditions" 
-                    })} 
+                    {...register('termsAccepted')}
                   />
                   <label
                     htmlFor="termsAccepted"

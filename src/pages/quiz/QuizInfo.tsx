@@ -2,6 +2,8 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
 import { useMutation } from '@tanstack/react-query';
 import { useAuth } from '@/AuthContext';
 import { useQuiz } from '@/QuizContext';
@@ -14,12 +16,26 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { PenTool, ArrowRight } from 'lucide-react';
 import { Student } from '@/types';
 
-interface QuizInfoFormData {
-  age: number | '';
-  interests: string;
-  strengths: string;
-  weakSubjects: string;
-}
+// Define Zod schema for form validation
+const quizInfoSchema = z.object({
+  age: z.preprocess(
+    (val) => (val === '' ? undefined : Number(val)),
+    z.number({ invalid_type_error: "Age is required" })
+      .min(10, "Age must be at least 10")
+      .max(100, "Age must be at most 100")
+  ),
+  interests: z.string()
+    .min(3, "Please enter at least one interest")
+    .refine(val => val.trim().length > 0, "Interests are required"),
+  strengths: z.string()
+    .min(3, "Please enter at least one strength")
+    .refine(val => val.trim().length > 0, "Strengths are required"),
+  weakSubjects: z.string()
+    .min(3, "Please enter at least one area to improve")
+    .refine(val => val.trim().length > 0, "Areas to improve are required"),
+});
+
+type QuizInfoFormData = z.infer<typeof quizInfoSchema>;
 
 const QuizInfo: React.FC = () => {
   const navigate = useNavigate();
@@ -41,6 +57,7 @@ const QuizInfo: React.FC = () => {
     handleSubmit,
     formState: { errors },
   } = useForm<QuizInfoFormData>({
+    resolver: zodResolver(quizInfoSchema),
     defaultValues: {
       age: studentUser?.age || '',
       interests: studentUser?.interests?.join(', ') || '',
@@ -82,19 +99,6 @@ const QuizInfo: React.FC = () => {
   const onSubmit = (data: QuizInfoFormData) => {
     setFormError(null);
     updateProfileMutation.mutate(data);
-  };
-
-  const validateAge = (value: number | '') => {
-    if (value === '') return "Age is required";
-    if (value < 10) return "Age must be at least 10";
-    if (value > 100) return "Age must be at most 100";
-    return true;
-  };
-
-  const validateText = (value: string, fieldName: string) => {
-    if (!value.trim()) return `${fieldName} is required`;
-    if (value.trim().length < 3) return `Please enter at least one ${fieldName.toLowerCase()}`;
-    return true;
   };
   
   if (isLoading || !user || !isStudent) {
@@ -194,11 +198,7 @@ const QuizInfo: React.FC = () => {
                     <Input
                       id="age"
                       type="number"
-                      {...register('age', { 
-                        required: "Age is required",
-                        valueAsNumber: true,
-                        validate: validateAge
-                      })}
+                      {...register('age', { valueAsNumber: true })}
                     />
                     {errors.age && (
                       <p className="text-sm text-destructive">{errors.age.message}</p>
@@ -212,10 +212,7 @@ const QuizInfo: React.FC = () => {
                     <Textarea
                       id="interests"
                       placeholder="Technology, Science, Art, Music, Sports..."
-                      {...register('interests', { 
-                        required: "Interests are required",
-                        validate: (value) => validateText(value, "Interests")
-                      })}
+                      {...register('interests')}
                     />
                     {errors.interests && (
                       <p className="text-sm text-destructive">{errors.interests.message}</p>
@@ -229,10 +226,7 @@ const QuizInfo: React.FC = () => {
                     <Textarea
                       id="strengths"
                       placeholder="Problem solving, Creativity, Communication, Leadership..."
-                      {...register('strengths', { 
-                        required: "Strengths are required",
-                        validate: (value) => validateText(value, "Strengths")
-                      })}
+                      {...register('strengths')}
                     />
                     {errors.strengths && (
                       <p className="text-sm text-destructive">{errors.strengths.message}</p>
@@ -246,10 +240,7 @@ const QuizInfo: React.FC = () => {
                     <Textarea
                       id="weakSubjects"
                       placeholder="Math, Writing, Public speaking, History..."
-                      {...register('weakSubjects', { 
-                        required: "This field is required",
-                        validate: (value) => validateText(value, "Areas to improve")
-                      })}
+                      {...register('weakSubjects')}
                     />
                     {errors.weakSubjects && (
                       <p className="text-sm text-destructive">{errors.weakSubjects.message}</p>
