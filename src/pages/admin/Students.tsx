@@ -17,8 +17,17 @@ import {
   FileText, 
   CreditCard,
   Edit,
-  User
+  User,
+  Loader2
 } from 'lucide-react';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 
 const Students: React.FC = () => {
   const navigate = useNavigate();
@@ -35,6 +44,8 @@ const Students: React.FC = () => {
   if (isLoading || !user || !isAdmin) {
     return <div className="p-10 text-center">Loading...</div>;
   }
+  
+  console.log('Students data:', students); // Add this to debug
   
   return (
     <Layout>
@@ -59,73 +70,84 @@ const Students: React.FC = () => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b">
-                    <th className="text-left py-3 px-4 font-medium">ID</th>
-                    <th className="text-left py-3 px-4 font-medium">Name</th>
-                    <th className="text-left py-3 px-4 font-medium">Email</th>
-                    <th className="text-left py-3 px-4 font-medium">Age</th>
-                    <th className="text-left py-3 px-4 font-medium">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {students.map((student) => (
-                    <tr key={student.id} className="border-b hover:bg-muted/50">
-                      <td className="py-3 px-4">{student.id}</td>
-                      <td className="py-3 px-4">{student.name}</td>
-                      <td className="py-3 px-4">{student.email}</td>
-                      <td className="py-3 px-4">{student.age || 'N/A'}</td>
-                      <td className="py-3 px-4">
-                        <div className="flex space-x-2">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => navigate(`/admin/students/${student.id}`)}
-                            title="View Profile"
-                          >
-                            <User className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => navigate(`/admin/students/${student.id}/quiz-history`)}
-                            title="Quiz History"
-                          >
-                            <FileText className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => navigate(`/admin/students/${student.id}/payments`)}
-                            title="Payment History"
-                          >
-                            <CreditCard className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => navigate(`/admin/students/${student.id}/results`)}
-                            title="View Results"
-                          >
-                            <Eye className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => navigate(`/admin/students/${student.id}/edit`)}
-                            title="Edit Profile"
-                          >
-                            <Edit className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            {students.length === 0 ? (
+              <div className="text-center py-12">
+                <User className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                <h3 className="text-lg font-medium mb-2">No students found</h3>
+                <p className="text-muted-foreground mb-6">There are no registered students in the system yet.</p>
+                <Button onClick={() => navigate('/admin/dashboard')}>
+                  Back to Dashboard
+                </Button>
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>ID</TableHead>
+                      <TableHead>Name</TableHead>
+                      <TableHead>Email</TableHead>
+                      <TableHead>Age</TableHead>
+                      <TableHead>Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {students.map((student) => (
+                      <TableRow key={student.id} className="hover:bg-muted/50">
+                        <TableCell>{student.id}</TableCell>
+                        <TableCell>{student.name}</TableCell>
+                        <TableCell>{student.email}</TableCell>
+                        <TableCell>{student.age || 'N/A'}</TableCell>
+                        <TableCell>
+                          <div className="flex space-x-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => navigate(`/admin/students/${student.id}`)}
+                              title="View Profile"
+                            >
+                              <User className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => navigate(`/admin/students/${student.id}/quiz-history`)}
+                              title="Quiz History"
+                            >
+                              <FileText className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => navigate(`/admin/students/${student.id}/payments`)}
+                              title="Payment History"
+                            >
+                              <CreditCard className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => navigate(`/admin/students/${student.id}/results`)}
+                              title="View Results"
+                            >
+                              <Eye className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => navigate(`/admin/students/${student.id}/edit`)}
+                              title="Edit Profile"
+                            >
+                              <Edit className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>

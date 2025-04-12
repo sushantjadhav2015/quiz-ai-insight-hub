@@ -1,4 +1,3 @@
-
 import usersData from '../data/users.json';
 import categoriesData from '../data/categories.json';
 import questionsData from '../data/questions.json';
@@ -254,4 +253,22 @@ export const getResultById = async (id: string): Promise<QuizResult> => {
 export const getAllResults = async (): Promise<QuizResult[]> => {
   await delay(400);
   return resultsData.map(convertResultData);
+};
+
+// Students API
+export const getStudents = async (): Promise<Student[]> => {
+  await delay(300);
+  // Filter users that have a role of 'student'
+  return usersData.filter(user => user.role === 'student') as Student[];
+};
+
+export const getStudentById = async (id: string): Promise<Student | null> => {
+  await delay(200);
+  const student = usersData.find(user => user.id === id && user.role === 'student');
+  
+  if (!student) {
+    return null;
+  }
+  
+  return student as Student;
 };

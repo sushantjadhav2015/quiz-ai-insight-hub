@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from './AuthContext';
@@ -16,7 +15,8 @@ import {
   deleteQuestion as deleteQuestionApi,
   startQuiz as startQuizApi,
   submitQuiz as submitQuizApi,
-  processPayment as processPaymentApi
+  processPayment as processPaymentApi,
+  getStudents
 } from './api';
 
 interface QuizContextType {
@@ -70,69 +70,52 @@ export const QuizProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   
-  // State for quiz data
   const [quizInfo, setQuizInfo] = useState<QuizInfo | null>(null);
   const [currentQuizSession, setCurrentQuizSession] = useState<QuizSession | null>(null);
   
-  // Fetch categories
   const { data: categories = [] } = useQuery({
     queryKey: ['categories'],
     queryFn: getCategories,
     staleTime: 60000, // 1 minute
   });
   
-  // Fetch questions
   const { data: questions = [] } = useQuery({
     queryKey: ['questions'],
     queryFn: getQuestions,
     staleTime: 60000, // 1 minute
   });
   
-  // Fetch results
   const { data: quizResults = [] } = useQuery({
     queryKey: ['results'],
     queryFn: () => {
-      // This is just a placeholder since we're using imported mock data
-      // In a real app, you'd have an API call here
       return Promise.resolve([]);
     },
     staleTime: 60000, // 1 minute
   });
   
-  // Fetch payments
   const { data: payments = [] } = useQuery({
     queryKey: ['payments'],
     queryFn: () => {
-      // This is just a placeholder since we're using imported mock data
-      // In a real app, you'd have an API call here
       return Promise.resolve([]);
     },
     staleTime: 60000, // 1 minute
   });
   
-  // Fetch students (for admin)
   const { data: students = [] } = useQuery({
     queryKey: ['students'],
-    queryFn: () => {
-      // This is just a placeholder since we're using imported mock data
-      // In a real app, you'd have an API call here
-      return Promise.resolve([]);
-    },
+    queryFn: getStudents,
     staleTime: 60000, // 1 minute
   });
   
-  // Get student by ID
   const getStudentById = (id: string) => {
     return students.find(student => student.id === id);
   };
   
-  // Security check for quiz sessions
   const getQuizSessionSecurityStatus = () => {
     if (!currentQuizSession) {
       return { isSecure: false, message: 'No active quiz session' };
     }
     
-    // Check if quiz has already been completed
     if (currentQuizSession.completed) {
       return { isSecure: false, message: 'Quiz has already been completed' };
     }
@@ -140,7 +123,6 @@ export const QuizProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return { isSecure: true };
   };
   
-  // Category mutations
   const addCategoryMutation = useMutation({
     mutationFn: createCategory,
     onSuccess: (newCategory) => {
@@ -179,7 +161,6 @@ export const QuizProvider: React.FC<{ children: React.ReactNode }> = ({ children
     },
   });
   
-  // Question mutations
   const addQuestionMutation = useMutation({
     mutationFn: createQuestion,
     onSuccess: () => {
@@ -215,7 +196,6 @@ export const QuizProvider: React.FC<{ children: React.ReactNode }> = ({ children
     },
   });
   
-  // Quiz mutations
   const startQuizMutation = useMutation({
     mutationFn: () => {
       if (!user || !quizInfo) {
@@ -255,7 +235,6 @@ export const QuizProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return submitQuizApi(user.id, currentQuizSession.id, answers);
     },
     onSuccess: (result) => {
-      // Mark quiz as completed
       setCurrentQuizSession(prev => prev ? { ...prev, completed: true } : null);
       
       queryClient.invalidateQueries({ queryKey: ['results'] });
@@ -282,7 +261,6 @@ export const QuizProvider: React.FC<{ children: React.ReactNode }> = ({ children
     },
   });
   
-  // Exposed methods
   const addCategory = (category: Omit<Category, 'id' | 'createdBy' | 'questionCount'>) => {
     addCategoryMutation.mutate(category);
   };
@@ -319,7 +297,6 @@ export const QuizProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return await paymentMutation.mutateAsync();
   };
   
-  // Handle page visibility changes for quiz security
   React.useEffect(() => {
     const handleVisibilityChange = () => {
       if (currentQuizSession && !currentQuizSession.completed && document.hidden) {
