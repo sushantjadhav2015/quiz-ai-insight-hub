@@ -59,7 +59,7 @@ const QuizInfo: React.FC = () => {
   } = useForm<QuizInfoFormData>({
     resolver: zodResolver(quizInfoSchema),
     defaultValues: {
-      age: studentUser?.age || '',
+      age: studentUser?.age || undefined,
       interests: studentUser?.interests?.join(', ') || '',
       strengths: studentUser?.strengths?.join(', ') || '',
       weakSubjects: studentUser?.weakSubjects?.join(', ') || '',
@@ -70,7 +70,7 @@ const QuizInfo: React.FC = () => {
     mutationFn: (data: QuizInfoFormData) => {
       // Transform the data
       const formattedQuizInfo = {
-        age: typeof data.age === 'string' ? parseInt(data.age) : data.age,
+        age: Number(data.age),
         interests: data.interests.split(',').map(item => item.trim()),
         strengths: data.strengths.split(',').map(item => item.trim()),
         weakSubjects: data.weakSubjects.split(',').map(item => item.trim()),
@@ -198,7 +198,7 @@ const QuizInfo: React.FC = () => {
                     <Input
                       id="age"
                       type="number"
-                      {...register('age', { valueAsNumber: true })}
+                      {...register('age')}
                     />
                     {errors.age && (
                       <p className="text-sm text-destructive">{errors.age.message}</p>
