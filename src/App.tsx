@@ -29,7 +29,14 @@ import Students from "./pages/admin/Students";
 import Payments from "./pages/admin/Payments";
 import Questions from "./pages/admin/Questions";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 const App = () => (
   <React.StrictMode>
