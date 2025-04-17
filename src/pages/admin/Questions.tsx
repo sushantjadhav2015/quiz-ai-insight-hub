@@ -58,9 +58,9 @@ const QuestionsPage: React.FC = () => {
   const { user, isLoading, isAdmin } = useAuth();
   const { categories, questions, addQuestion, updateQuestion, deleteQuestion } = useQuiz();
   
-  const [selectedCategory, setSelectedCategory] = useState<string>('');
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const [selectedDifficulty, setSelectedDifficulty] = useState<string>('');
+  const [selectedDifficulty, setSelectedDifficulty] = useState<string>('all');
   const [currentPage, setCurrentPage] = useState<number>(1);
   
   const [newQuestion, setNewQuestion] = useState({
@@ -88,11 +88,11 @@ const QuestionsPage: React.FC = () => {
   
   // Filter questions by category, search query, and difficulty
   const filteredQuestions = questions.filter(question => {
-    const matchesCategory = !selectedCategory || question.categoryId === selectedCategory;
+    const matchesCategory = selectedCategory === 'all' || question.categoryId === selectedCategory;
     const matchesSearch = !searchQuery || 
       question.text.toLowerCase().includes(searchQuery.toLowerCase()) ||
       question.options.some(option => option.toLowerCase().includes(searchQuery.toLowerCase()));
-    const matchesDifficulty = !selectedDifficulty || question.difficulty === selectedDifficulty;
+    const matchesDifficulty = selectedDifficulty === 'all' || question.difficulty === selectedDifficulty;
     
     return matchesCategory && matchesSearch && matchesDifficulty;
   });
@@ -172,7 +172,7 @@ const QuestionsPage: React.FC = () => {
   const resetForm = () => {
     setNewQuestion({
       text: '',
-      categoryId: selectedCategory,
+      categoryId: selectedCategory !== 'all' ? selectedCategory : '',
       options: ['', '', '', ''],
       correctOption: 0,
       difficulty: 'medium',
@@ -192,7 +192,7 @@ const QuestionsPage: React.FC = () => {
     e.preventDefault();
     
     if (!newQuestion.categoryId) {
-      setNewQuestion({ ...newQuestion, categoryId: selectedCategory });
+      setNewQuestion({ ...newQuestion, categoryId: selectedCategory !== 'all' ? selectedCategory : '' });
     }
     
     if (isEditing && editingQuestionId) {
@@ -239,9 +239,9 @@ const QuestionsPage: React.FC = () => {
   };
   
   const handleClearFilters = () => {
-    setSelectedCategory('');
+    setSelectedCategory('all');
     setSearchQuery('');
-    setSelectedDifficulty('');
+    setSelectedDifficulty('all');
     setCurrentPage(1);
   };
   
@@ -275,7 +275,7 @@ const QuestionsPage: React.FC = () => {
                 <div className="space-y-2">
                   <Label htmlFor="category">Category</Label>
                   <Select 
-                    value={newQuestion.categoryId || selectedCategory} 
+                    value={newQuestion.categoryId || (selectedCategory !== 'all' ? selectedCategory : '')} 
                     onValueChange={(value) => setNewQuestion({ ...newQuestion, categoryId: value })}
                   >
                     <SelectTrigger>
@@ -415,7 +415,7 @@ const QuestionsPage: React.FC = () => {
                         <SelectValue placeholder="All Categories" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">All Categories</SelectItem>
+                        <SelectItem value="all">All Categories</SelectItem>
                         {categories.map((category) => (
                           <SelectItem key={category.id} value={category.id}>
                             {category.name}
@@ -437,7 +437,7 @@ const QuestionsPage: React.FC = () => {
                         <SelectValue placeholder="All Difficulties" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">All Difficulties</SelectItem>
+                        <SelectItem value="all">All Difficulties</SelectItem>
                         <SelectItem value="easy">Easy</SelectItem>
                         <SelectItem value="medium">Medium</SelectItem>
                         <SelectItem value="hard">Hard</SelectItem>
@@ -446,7 +446,7 @@ const QuestionsPage: React.FC = () => {
                   </div>
                 </div>
                 
-                {(searchQuery || selectedCategory || selectedDifficulty) && (
+                {(searchQuery || selectedCategory !== 'all' || selectedDifficulty !== 'all') && (
                   <div className="flex items-center justify-between">
                     <div className="text-sm text-muted-foreground">
                       {filteredQuestions.length} results found
@@ -552,7 +552,7 @@ const QuestionsPage: React.FC = () => {
                   </>
                 ) : (
                   <div className="text-center py-10 text-muted-foreground">
-                    {searchQuery || selectedCategory || selectedDifficulty ? 
+                    {searchQuery || selectedCategory !== 'all' || selectedDifficulty !== 'all' ? 
                       'No questions found matching your filters.' : 
                       'No questions available yet.'}
                   </div>
