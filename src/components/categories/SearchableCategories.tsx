@@ -25,12 +25,15 @@ interface SearchableCategoriesProps {
 }
 
 const SearchableCategories = ({
-  categories,
+  categories = [], // Provide default empty array
   value,
   onValueChange,
   placeholder = "Select a category"
 }: SearchableCategoriesProps) => {
   const [open, setOpen] = React.useState(false);
+  
+  // Ensure categories is always an array
+  const safeCategories = Array.isArray(categories) ? categories : [];
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -43,7 +46,7 @@ const SearchableCategories = ({
         >
           {value === 'all'
             ? 'All Categories'
-            : categories.find((category) => category.id === value)?.name ?? placeholder}
+            : safeCategories.find((category) => category.id === value)?.name ?? placeholder}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
@@ -67,7 +70,7 @@ const SearchableCategories = ({
               />
               All Categories
             </CommandItem>
-            {categories.map((category) => (
+            {safeCategories.map((category) => (
               <CommandItem
                 key={category.id}
                 value={category.name}
