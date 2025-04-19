@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/AuthContext';
@@ -379,18 +378,27 @@ const QuestionsPage = () => {
                           </div>
                         </CardHeader>
                         <CardContent>
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                          <div className="space-y-2">
                             {question.options.map((option, index) => (
                               <div 
                                 key={index}
-                                className={`p-2 border rounded-md ${
-                                  index === question.correctOption ? 'border-green-500 bg-green-50' : ''
+                                className={`p-3 border rounded-md ${
+                                  index === question.correctOption 
+                                    ? 'border-green-500 bg-green-50' 
+                                    : 'border-input'
                                 }`}
                               >
-                                {index === question.correctOption && (
-                                  <Badge className="bg-green-500 mb-1">Correct</Badge>
-                                )}
-                                <p>{option}</p>
+                                <div className="flex items-start gap-3">
+                                  <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-muted text-sm font-medium">
+                                    {String.fromCharCode(65 + index)}
+                                  </span>
+                                  <div className="flex-1">
+                                    {index === question.correctOption && (
+                                      <Badge className="mb-1 bg-green-500">Correct Answer</Badge>
+                                    )}
+                                    <p className="text-sm">{option}</p>
+                                  </div>
+                                </div>
                               </div>
                             ))}
                           </div>
