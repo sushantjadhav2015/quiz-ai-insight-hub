@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext } from 'react';
 import { useAuth } from './AuthContext';
 import { QuizInfo, QuizSession, QuizResult, Payment, Student, Category, Question } from './types';
@@ -7,6 +6,7 @@ import { useQuestions } from './hooks/useQuestions';
 import { useQuizSession } from './hooks/useQuizSession';
 import { usePayments } from './hooks/usePayments';
 import { useStudents } from './hooks/useStudents';
+import { toast } from './hooks/use-toast';
 
 interface QuizContextType {
   categories: Category[];
