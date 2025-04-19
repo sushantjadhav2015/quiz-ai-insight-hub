@@ -1,9 +1,9 @@
-
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import SearchableCategories from '@/components/categories/SearchableCategories';
 import {
   Select,
   SelectContent,
@@ -43,21 +43,12 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
     <form onSubmit={onSubmit} className="space-y-4">
       <div className="space-y-2">
         <Label htmlFor="category">Category</Label>
-        <Select 
-          value={newQuestion.categoryId} 
+        <SearchableCategories
+          categories={categories}
+          value={newQuestion.categoryId}
           onValueChange={(value) => onQuestionChange('categoryId', value)}
-        >
-          <SelectTrigger>
-            <SelectValue placeholder="Select a category" />
-          </SelectTrigger>
-          <SelectContent>
-            {categories.map((category) => (
-              <SelectItem key={category.id} value={category.id}>
-                {category.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+          placeholder="Select a category"
+        />
       </div>
 
       <div className="space-y-2">

@@ -1,9 +1,9 @@
-
 import React from 'react';
 import { Search } from 'lucide-react';
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import SearchableCategories from '@/components/categories/SearchableCategories';
 import {
   Select,
   SelectContent,
@@ -59,25 +59,14 @@ const QuestionFilters: React.FC<QuestionFiltersProps> = ({
         </div>
         
         <div className="w-full md:w-1/4">
-          <Select 
-            value={selectedCategory} 
+          <SearchableCategories
+            categories={categories}
+            value={selectedCategory}
             onValueChange={(value) => {
               setSelectedCategory(value);
               setCurrentPage(1);
             }}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="All Categories" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Categories</SelectItem>
-              {categories.map((category) => (
-                <SelectItem key={category.id} value={category.id}>
-                  {category.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          />
         </div>
         
         <div className="w-full md:w-1/4">
