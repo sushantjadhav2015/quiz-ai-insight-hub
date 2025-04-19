@@ -1,9 +1,13 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/AuthContext';
 import { useQuiz } from '@/QuizContext';
 import Layout from '@/components/layout/Layout';
 import QuestionForm from '@/components/questions/QuestionForm';
+import QuestionFilters from '@/components/questions/QuestionFilters';
+import QuestionCard from '@/components/questions/QuestionCard';
+import QuestionPagination from '@/components/questions/QuestionPagination';
 import {
   Dialog,
   DialogContent,
@@ -11,23 +15,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { 
-  Plus,
-  Search,
-  Edit,
-  Trash 
-} from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
-import { toast } from '@/hooks/use-toast';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Plus } from 'lucide-react';
 import {
   Card,
   CardContent,
@@ -35,15 +23,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
+import { toast } from '@/hooks/use-toast';
 
 const ITEMS_PER_PAGE = 5;
 
@@ -93,67 +73,6 @@ const QuestionsPage = () => {
   const totalPages = Math.ceil(filteredQuestions.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const paginatedQuestions = filteredQuestions.slice(startIndex, startIndex + ITEMS_PER_PAGE);
-  
-  const generatePaginationItems = () => {
-    const items = [];
-    
-    items.push(
-      <PaginationItem key="page-1">
-        <PaginationLink 
-          onClick={() => setCurrentPage(1)}
-          isActive={currentPage === 1}
-        >
-          1
-        </PaginationLink>
-      </PaginationItem>
-    );
-    
-    if (currentPage > 3) {
-      items.push(
-        <PaginationItem key="ellipsis-1">
-          <PaginationEllipsis />
-        </PaginationItem>
-      );
-    }
-    
-    for (let i = Math.max(2, currentPage - 1); i <= Math.min(totalPages - 1, currentPage + 1); i++) {
-      if (i <= 1 || i >= totalPages) continue;
-      
-      items.push(
-        <PaginationItem key={`page-${i}`}>
-          <PaginationLink 
-            onClick={() => setCurrentPage(i)}
-            isActive={currentPage === i}
-          >
-            {i}
-          </PaginationLink>
-        </PaginationItem>
-      );
-    }
-    
-    if (currentPage < totalPages - 2) {
-      items.push(
-        <PaginationItem key="ellipsis-2">
-          <PaginationEllipsis />
-        </PaginationItem>
-      );
-    }
-    
-    if (totalPages > 1) {
-      items.push(
-        <PaginationItem key={`page-${totalPages}`}>
-          <PaginationLink 
-            onClick={() => setCurrentPage(totalPages)}
-            isActive={currentPage === totalPages}
-          >
-            {totalPages}
-          </PaginationLink>
-        </PaginationItem>
-      );
-    }
-    
-    return items;
-  };
   
   const resetForm = () => {
     setNewQuestion({
@@ -259,179 +178,38 @@ const QuestionsPage = () => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              <div className="flex flex-col md:flex-row gap-4">
-                <div className="flex-1">
-                  <Label htmlFor="search" className="sr-only">Search</Label>
-                  <div className="relative">
-                    <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      id="search"
-                      placeholder="Search questions or answers..."
-                      className="pl-8"
-                      value={searchQuery}
-                      onChange={(e) => {
-                        setSearchQuery(e.target.value);
-                        setCurrentPage(1);
-                      }}
-                    />
-                  </div>
-                </div>
-                
-                <div className="w-full md:w-1/4">
-                  <Select 
-                    value={selectedCategory} 
-                    onValueChange={(value) => {
-                      setSelectedCategory(value);
-                      setCurrentPage(1);
-                    }}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="All Categories" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Categories</SelectItem>
-                      {categories.map((category) => (
-                        <SelectItem key={category.id} value={category.id}>
-                          {category.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                
-                <div className="w-full md:w-1/4">
-                  <Select 
-                    value={selectedDifficulty} 
-                    onValueChange={(value) => {
-                      setSelectedDifficulty(value);
-                      setCurrentPage(1);
-                    }}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="All Difficulties" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Difficulties</SelectItem>
-                      <SelectItem value="easy">Easy</SelectItem>
-                      <SelectItem value="medium">Medium</SelectItem>
-                      <SelectItem value="hard">Hard</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-              
-              {(searchQuery || selectedCategory !== 'all' || selectedDifficulty !== 'all') && (
-                <div className="flex items-center justify-between">
-                  <div className="text-sm text-muted-foreground">
-                    {filteredQuestions.length} results found
-                  </div>
-                  <Button variant="ghost" size="sm" onClick={handleClearFilters}>
-                    Clear filters
-                  </Button>
-                </div>
-              )}
-            </div>
+            <QuestionFilters
+              selectedCategory={selectedCategory}
+              setSelectedCategory={setSelectedCategory}
+              searchQuery={searchQuery}
+              setSearchQuery={setSearchQuery}
+              selectedDifficulty={selectedDifficulty}
+              setSelectedDifficulty={setSelectedDifficulty}
+              setCurrentPage={setCurrentPage}
+              categories={categories}
+              handleClearFilters={handleClearFilters}
+              filteredQuestionsCount={filteredQuestions.length}
+            />
             
             <div className="space-y-4 mt-6">
               {filteredQuestions.length > 0 ? (
                 <>
-                  {paginatedQuestions.map((question) => {
-                    const category = categories.find(c => c.id === question.categoryId);
-                    return (
-                      <Card key={question.id} className="border border-muted">
-                        <CardHeader className="pb-2">
-                          <div className="flex justify-between items-start">
-                            <div>
-                              <div className="flex items-center gap-2 mb-2">
-                                <Badge variant="outline">{category?.name || 'Unknown Category'}</Badge>
-                                <Badge 
-                                  variant="outline" 
-                                  className={
-                                    question.difficulty === 'easy' ? 'bg-green-100 text-green-800' :
-                                    question.difficulty === 'medium' ? 'bg-yellow-100 text-yellow-800' :
-                                    'bg-red-100 text-red-800'
-                                  }
-                                >
-                                  {question.difficulty.charAt(0).toUpperCase() + question.difficulty.slice(1)}
-                                </Badge>
-                              </div>
-                              <CardTitle className="text-base font-medium">{question.text}</CardTitle>
-                            </div>
-                            <div className="flex space-x-1">
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => handleEditQuestion(question)}
-                              >
-                                <Edit className="h-4 w-4" />
-                              </Button>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="text-red-500 hover:text-red-700"
-                                onClick={() => handleDeleteQuestion(question.id)}
-                              >
-                                <Trash className="h-4 w-4" />
-                              </Button>
-                            </div>
-                          </div>
-                        </CardHeader>
-                        <CardContent>
-                          <div className="space-y-2">
-                            {question.options.map((option, index) => (
-                              <div 
-                                key={index}
-                                className={`p-3 border rounded-md ${
-                                  index === question.correctOption 
-                                    ? 'border-green-500 bg-green-50' 
-                                    : 'border-input'
-                                }`}
-                              >
-                                <div className="flex items-start gap-3">
-                                  <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-muted text-sm font-medium">
-                                    {String.fromCharCode(65 + index)}
-                                  </span>
-                                  <div className="flex-1">
-                                    {index === question.correctOption && (
-                                      <Badge className="mb-1 bg-green-500">Correct Answer</Badge>
-                                    )}
-                                    <p className="text-sm">{option}</p>
-                                  </div>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                          
-                          {question.explanation && (
-                            <div className="mt-4 p-3 bg-muted rounded-md">
-                              <p className="text-sm font-medium">Explanation:</p>
-                              <p className="text-sm text-muted-foreground">{question.explanation}</p>
-                            </div>
-                          )}
-                        </CardContent>
-                      </Card>
-                    );
-                  })}
+                  {paginatedQuestions.map((question) => (
+                    <QuestionCard
+                      key={question.id}
+                      question={question}
+                      category={categories.find(c => c.id === question.categoryId)}
+                      onEdit={handleEditQuestion}
+                      onDelete={handleDeleteQuestion}
+                    />
+                  ))}
                   
                   {totalPages > 1 && (
-                    <Pagination className="mt-8">
-                      <PaginationContent>
-                        {currentPage > 1 && (
-                          <PaginationPrevious 
-                            onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))} 
-                          />
-                        )}
-                        
-                        {generatePaginationItems()}
-                        
-                        {currentPage < totalPages && (
-                          <PaginationNext 
-                            onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))} 
-                          />
-                        )}
-                      </PaginationContent>
-                    </Pagination>
+                    <QuestionPagination
+                      currentPage={currentPage}
+                      totalPages={totalPages}
+                      setCurrentPage={setCurrentPage}
+                    />
                   )}
                 </>
               ) : (
