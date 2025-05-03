@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,7 +12,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Save, Plus } from 'lucide-react';
+import { Save, Plus, Text } from 'lucide-react';
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface QuestionFormProps {
   categories: any[];
@@ -39,12 +41,15 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
   onSubmit,
   onCancel,
 }) => {
+  const textLength = newQuestion.text.length;
+  const isLongText = textLength > 500;
+  
   return (
     <form onSubmit={onSubmit} className="space-y-4">
       <div className="space-y-2">
         <Label htmlFor="category">Category</Label>
         <SearchableCategories
-          categories={categories}
+          categories={categories || []}
           value={newQuestion.categoryId}
           onValueChange={(value) => onQuestionChange('categoryId', value)}
           placeholder="Select a category"
@@ -52,15 +57,26 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="question">Question Text</Label>
+        <div className="flex items-center justify-between">
+          <Label htmlFor="question">Question Text</Label>
+          <span className={`text-xs ${isLongText ? 'text-amber-500' : 'text-muted-foreground'}`}>
+            {textLength} characters
+          </span>
+        </div>
         <Textarea
           id="question"
           placeholder="Enter the question text"
           value={newQuestion.text}
           onChange={(e) => onQuestionChange('text', e.target.value)}
           required
-          className="min-h-[100px]"
+          className="min-h-[100px] resize-y"
         />
+        {isLongText && (
+          <p className="text-xs text-amber-500 flex items-center gap-1">
+            <Text className="h-3 w-3" />
+            Long text may affect display in some views
+          </p>
+        )}
       </div>
 
       <div className="space-y-2">
@@ -112,6 +128,7 @@ const QuestionForm: React.FC<QuestionFormProps> = ({
           placeholder="Provide an explanation for the correct answer"
           value={newQuestion.explanation}
           onChange={(e) => onQuestionChange('explanation', e.target.value)}
+          className="resize-y"
         />
       </div>
 

@@ -1,6 +1,6 @@
 
-import React from 'react';
-import { Edit, Trash } from 'lucide-react';
+import React, { useState } from 'react';
+import { Edit, Trash, Text } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -10,6 +10,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Category, Question } from '@/types';
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface QuestionCardProps {
   question: Question;
@@ -24,11 +25,18 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
   onEdit,
   onDelete,
 }) => {
+  const [isTextExpanded, setIsTextExpanded] = useState(false);
+  const isLongText = question.text.length > 150;
+  
+  const displayText = isLongText && !isTextExpanded 
+    ? `${question.text.substring(0, 150)}...` 
+    : question.text;
+
   return (
     <Card className="border border-muted">
       <CardHeader className="pb-2">
         <div className="flex justify-between items-start">
-          <div>
+          <div className="flex-1">
             <div className="flex items-center gap-2 mb-2">
               <Badge variant="outline">{category?.name || 'Unknown Category'}</Badge>
               <Badge 
@@ -42,9 +50,21 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
                 {question.difficulty.charAt(0).toUpperCase() + question.difficulty.slice(1)}
               </Badge>
             </div>
-            <CardTitle className="text-base font-medium">{question.text}</CardTitle>
+            <CardTitle className="text-base font-medium">
+              {displayText}
+              {isLongText && (
+                <Button 
+                  variant="link" 
+                  size="sm" 
+                  className="p-0 h-auto font-normal" 
+                  onClick={() => setIsTextExpanded(!isTextExpanded)}
+                >
+                  {isTextExpanded ? "Show less" : "Show more"}
+                </Button>
+              )}
+            </CardTitle>
           </div>
-          <div className="flex space-x-1">
+          <div className="flex space-x-1 ml-2">
             <Button
               variant="ghost"
               size="sm"
@@ -92,7 +112,9 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
         {question.explanation && (
           <div className="mt-4 p-3 bg-muted rounded-md">
             <p className="text-sm font-medium">Explanation:</p>
-            <p className="text-sm text-muted-foreground">{question.explanation}</p>
+            <ScrollArea className="max-h-40">
+              <p className="text-sm text-muted-foreground">{question.explanation}</p>
+            </ScrollArea>
           </div>
         )}
       </CardContent>
