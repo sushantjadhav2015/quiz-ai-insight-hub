@@ -1,5 +1,5 @@
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/AuthContext';
 import { useQuiz } from '@/QuizContext';
@@ -7,8 +7,10 @@ import Layout from '@/components/layout/Layout';
 import QuestionForm from '@/components/questions/QuestionForm';
 import QuestionFilters from '@/components/questions/QuestionFilters';
 import QuestionCard from '@/components/questions/QuestionCard';
+import QuestionTable from '@/components/questions/QuestionTable';
 import QuestionPagination from '@/components/questions/QuestionPagination';
 import QuestionListHeader from '@/components/questions/QuestionListHeader';
+import { ViewMode } from '@/components/questions/ViewToggle';
 import {
   Dialog,
   DialogContent,
@@ -32,6 +34,7 @@ const QuestionsPage = () => {
   const { user, isLoading, isAdmin } = useAuth();
   const { categories, questions, addQuestion, updateQuestion, deleteQuestion } = useQuiz();
   const { filters, form } = useQuestionManagement();
+  const [viewMode, setViewMode] = useState<ViewMode>('table');
   
   useEffect(() => {
     if (!isLoading && (!user || !isAdmin)) {
@@ -121,20 +124,33 @@ const QuestionsPage = () => {
               categories={categories}
               handleClearFilters={handleClearFilters}
               filteredQuestionsCount={filteredQuestions.length}
+              viewMode={viewMode}
+              setViewMode={setViewMode}
             />
             
             <div className="space-y-4 mt-6">
               {filteredQuestions.length > 0 ? (
                 <>
-                  {paginatedQuestions.map((question) => (
-                    <QuestionCard
-                      key={question.id}
-                      question={question}
-                      category={categories.find(c => c.id === question.categoryId)}
+                  {viewMode === 'table' ? (
+                    <QuestionTable
+                      questions={paginatedQuestions}
+                      categories={categories}
                       onEdit={form.handleEditQuestion}
                       onDelete={handleDeleteQuestion}
                     />
-                  ))}
+                  ) : (
+                    <div className="space-y-4">
+                      {paginatedQuestions.map((question) => (
+                        <QuestionCard
+                          key={question.id}
+                          question={question}
+                          category={categories.find(c => c.id === question.categoryId)}
+                          onEdit={form.handleEditQuestion}
+                          onDelete={handleDeleteQuestion}
+                        />
+                      ))}
+                    </div>
+                  )}
                   
                   {totalPages > 1 && (
                     <QuestionPagination
