@@ -1,6 +1,6 @@
 
-import React, { useState } from 'react';
-import { Edit, Trash, Text } from 'lucide-react';
+import React from 'react';
+import { Edit, Trash } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -11,6 +11,12 @@ import {
 } from "@/components/ui/card";
 import { Category, Question } from '@/types';
 import { ScrollArea } from "@/components/ui/scroll-area";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface QuestionCardProps {
   question: Question;
@@ -25,12 +31,28 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
   onEdit,
   onDelete,
 }) => {
-  const [isTextExpanded, setIsTextExpanded] = useState(false);
-  const isLongText = question.text.length > 150;
-  
-  const displayText = isLongText && !isTextExpanded 
-    ? `${question.text.substring(0, 150)}...` 
-    : question.text;
+  const renderTextWithTooltip = (text: string) => {
+    const isLongText = text.length > 150;
+    
+    if (!isLongText) return text;
+    
+    const truncatedText = `${text.substring(0, 150)}...`;
+    
+    return (
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <span className="cursor-help">{truncatedText}</span>
+          </TooltipTrigger>
+          <TooltipContent side="bottom" className="max-w-md">
+            <ScrollArea className="max-h-[300px] overflow-auto">
+              {text}
+            </ScrollArea>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    );
+  };
 
   return (
     <Card className="border border-muted">
@@ -51,17 +73,7 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
               </Badge>
             </div>
             <CardTitle className="text-base font-medium">
-              {displayText}
-              {isLongText && (
-                <Button 
-                  variant="link" 
-                  size="sm" 
-                  className="p-0 h-auto font-normal" 
-                  onClick={() => setIsTextExpanded(!isTextExpanded)}
-                >
-                  {isTextExpanded ? "Show less" : "Show more"}
-                </Button>
-              )}
+              {renderTextWithTooltip(question.text)}
             </CardTitle>
           </div>
           <div className="flex space-x-1 ml-2">
@@ -102,7 +114,22 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
                   {index === question.correctOption && (
                     <Badge className="mb-1 bg-green-500">Correct Answer</Badge>
                   )}
-                  <p className="text-sm">{option}</p>
+                  <p className="text-sm">
+                    {option.length > 150 ? (
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <span className="cursor-help">{option.substring(0, 150)}...</span>
+                          </TooltipTrigger>
+                          <TooltipContent side="bottom" className="max-w-md">
+                            <ScrollArea className="max-h-[200px]">
+                              {option}
+                            </ScrollArea>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    ) : option}
+                  </p>
                 </div>
               </div>
             </div>
@@ -113,7 +140,22 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
           <div className="mt-4 p-3 bg-muted rounded-md">
             <p className="text-sm font-medium">Explanation:</p>
             <ScrollArea className="max-h-40">
-              <p className="text-sm text-muted-foreground">{question.explanation}</p>
+              <p className="text-sm text-muted-foreground">
+                {question.explanation.length > 150 ? (
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <span className="cursor-help">{question.explanation.substring(0, 150)}...</span>
+                      </TooltipTrigger>
+                      <TooltipContent side="bottom" className="max-w-md">
+                        <ScrollArea className="max-h-[200px]">
+                          {question.explanation}
+                        </ScrollArea>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                ) : question.explanation}
+              </p>
             </ScrollArea>
           </div>
         )}
