@@ -71,8 +71,11 @@ const QuestionTable: React.FC<QuestionTableProps> = ({
                     </Button>
                   </TableCell>
                   <TableCell className="font-medium">
-                    <div className="line-clamp-2">
-                      <TruncatedText text={question.text} />
+                    <div>
+                      <TruncatedText 
+                        text={question.text} 
+                        showMoreButton={true}
+                      />
                     </div>
                   </TableCell>
                   <TableCell>
@@ -136,7 +139,10 @@ const QuestionTable: React.FC<QuestionTableProps> = ({
                                       <Badge className="mb-1 bg-green-500">Correct Answer</Badge>
                                     )}
                                     <p className="text-sm">
-                                      <TruncatedText text={option} />
+                                      <TruncatedText 
+                                        text={option}
+                                        showMoreButton={false} 
+                                      />
                                     </p>
                                   </div>
                                 </div>
@@ -148,7 +154,10 @@ const QuestionTable: React.FC<QuestionTableProps> = ({
                             <div className="mt-4 p-3 bg-muted rounded-md">
                               <p className="text-sm font-medium">Explanation:</p>
                               <p className="text-sm text-muted-foreground">
-                                <TruncatedText text={question.explanation} />
+                                <TruncatedText 
+                                  text={question.explanation}
+                                  showMoreButton={false} 
+                                />
                               </p>
                             </div>
                           )}

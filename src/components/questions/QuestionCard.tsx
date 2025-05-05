@@ -11,12 +11,6 @@ import {
 } from "@/components/ui/card";
 import { Category, Question } from '@/types';
 import { ScrollArea } from "@/components/ui/scroll-area";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import TruncatedText from '@/components/ui/truncated-text';
 
 interface QuestionCardProps {
@@ -51,7 +45,10 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
               </Badge>
             </div>
             <CardTitle className="text-base font-medium">
-              <TruncatedText text={question.text} />
+              <TruncatedText 
+                text={question.text} 
+                showMoreButton={true}
+              />
             </CardTitle>
           </div>
           <div className="flex space-x-1 ml-2">
@@ -93,7 +90,10 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
                     <Badge className="mb-1 bg-green-500">Correct Answer</Badge>
                   )}
                   <p className="text-sm">
-                    <TruncatedText text={option} />
+                    <TruncatedText 
+                      text={option} 
+                      showMoreButton={false}
+                    />
                   </p>
                 </div>
               </div>
@@ -106,7 +106,10 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
             <p className="text-sm font-medium">Explanation:</p>
             <ScrollArea className="max-h-40">
               <p className="text-sm text-muted-foreground">
-                <TruncatedText text={question.explanation} />
+                <TruncatedText 
+                  text={question.explanation} 
+                  showMoreButton={false}
+                />
               </p>
             </ScrollArea>
           </div>
