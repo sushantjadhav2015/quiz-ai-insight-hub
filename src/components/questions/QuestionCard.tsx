@@ -17,6 +17,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import TruncatedText from '@/components/ui/truncated-text';
 
 interface QuestionCardProps {
   question: Question;
@@ -31,29 +32,6 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
   onEdit,
   onDelete,
 }) => {
-  const renderTextWithTooltip = (text: string) => {
-    const isLongText = text.length > 150;
-    
-    if (!isLongText) return text;
-    
-    const truncatedText = `${text.substring(0, 150)}...`;
-    
-    return (
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <span className="cursor-help">{truncatedText}</span>
-          </TooltipTrigger>
-          <TooltipContent side="bottom" className="max-w-md">
-            <ScrollArea className="max-h-[300px] overflow-auto">
-              {text}
-            </ScrollArea>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
-    );
-  };
-
   return (
     <Card className="border border-muted">
       <CardHeader className="pb-2">
@@ -73,7 +51,7 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
               </Badge>
             </div>
             <CardTitle className="text-base font-medium">
-              {renderTextWithTooltip(question.text)}
+              <TruncatedText text={question.text} />
             </CardTitle>
           </div>
           <div className="flex space-x-1 ml-2">
@@ -115,20 +93,7 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
                     <Badge className="mb-1 bg-green-500">Correct Answer</Badge>
                   )}
                   <p className="text-sm">
-                    {option.length > 150 ? (
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <span className="cursor-help">{option.substring(0, 150)}...</span>
-                          </TooltipTrigger>
-                          <TooltipContent side="bottom" className="max-w-md">
-                            <ScrollArea className="max-h-[200px]">
-                              {option}
-                            </ScrollArea>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    ) : option}
+                    <TruncatedText text={option} />
                   </p>
                 </div>
               </div>
@@ -141,20 +106,7 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
             <p className="text-sm font-medium">Explanation:</p>
             <ScrollArea className="max-h-40">
               <p className="text-sm text-muted-foreground">
-                {question.explanation.length > 150 ? (
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <span className="cursor-help">{question.explanation.substring(0, 150)}...</span>
-                      </TooltipTrigger>
-                      <TooltipContent side="bottom" className="max-w-md">
-                        <ScrollArea className="max-h-[200px]">
-                          {question.explanation}
-                        </ScrollArea>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                ) : question.explanation}
+                <TruncatedText text={question.explanation} />
               </p>
             </ScrollArea>
           </div>

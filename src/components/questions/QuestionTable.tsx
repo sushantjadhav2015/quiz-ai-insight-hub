@@ -13,12 +13,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import TruncatedText from '@/components/ui/truncated-text';
 
 interface QuestionTableProps {
   questions: Question[];
@@ -40,29 +35,6 @@ const QuestionTable: React.FC<QuestionTableProps> = ({
       ...prev,
       [id]: !prev[id]
     }));
-  };
-
-  const renderTextWithTooltip = (text: string) => {
-    const isLongText = text.length > 150;
-    
-    if (!isLongText) return text;
-    
-    const truncatedText = `${text.substring(0, 150)}...`;
-    
-    return (
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <span className="cursor-help">{truncatedText}</span>
-          </TooltipTrigger>
-          <TooltipContent side="bottom" className="max-w-md">
-            <ScrollArea className="max-h-[300px] overflow-auto">
-              {text}
-            </ScrollArea>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
-    );
   };
 
   return (
@@ -100,7 +72,7 @@ const QuestionTable: React.FC<QuestionTableProps> = ({
                   </TableCell>
                   <TableCell className="font-medium">
                     <div className="line-clamp-2">
-                      {renderTextWithTooltip(question.text)}
+                      <TruncatedText text={question.text} />
                     </div>
                   </TableCell>
                   <TableCell>
@@ -164,20 +136,7 @@ const QuestionTable: React.FC<QuestionTableProps> = ({
                                       <Badge className="mb-1 bg-green-500">Correct Answer</Badge>
                                     )}
                                     <p className="text-sm">
-                                      {option.length > 150 ? (
-                                        <TooltipProvider>
-                                          <Tooltip>
-                                            <TooltipTrigger asChild>
-                                              <span className="cursor-help">{option.substring(0, 150)}...</span>
-                                            </TooltipTrigger>
-                                            <TooltipContent side="bottom" className="max-w-md">
-                                              <ScrollArea className="max-h-[200px]">
-                                                {option}
-                                              </ScrollArea>
-                                            </TooltipContent>
-                                          </Tooltip>
-                                        </TooltipProvider>
-                                      ) : option}
+                                      <TruncatedText text={option} />
                                     </p>
                                   </div>
                                 </div>
@@ -189,20 +148,7 @@ const QuestionTable: React.FC<QuestionTableProps> = ({
                             <div className="mt-4 p-3 bg-muted rounded-md">
                               <p className="text-sm font-medium">Explanation:</p>
                               <p className="text-sm text-muted-foreground">
-                                {question.explanation.length > 150 ? (
-                                  <TooltipProvider>
-                                    <Tooltip>
-                                      <TooltipTrigger asChild>
-                                        <span className="cursor-help">{question.explanation.substring(0, 150)}...</span>
-                                      </TooltipTrigger>
-                                      <TooltipContent side="bottom" className="max-w-md">
-                                        <ScrollArea className="max-h-[200px]">
-                                          {question.explanation}
-                                        </ScrollArea>
-                                      </TooltipContent>
-                                    </Tooltip>
-                                  </TooltipProvider>
-                                ) : question.explanation}
+                                <TruncatedText text={question.explanation} />
                               </p>
                             </div>
                           )}
