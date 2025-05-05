@@ -91,8 +91,9 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
                   )}
                   <p className="text-sm">
                     <TruncatedText 
-                      text={option} 
+                      text={option}
                       showMoreButton={false}
+                      isOption={true}
                     />
                   </p>
                 </div>
@@ -104,14 +105,12 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
         {question.explanation && (
           <div className="mt-4 p-3 bg-muted rounded-md">
             <p className="text-sm font-medium">Explanation:</p>
-            <ScrollArea className="max-h-40">
-              <p className="text-sm text-muted-foreground">
-                <TruncatedText 
-                  text={question.explanation} 
-                  showMoreButton={false}
-                />
-              </p>
-            </ScrollArea>
+            <p className="text-sm text-muted-foreground">
+              <TruncatedText 
+                text={question.explanation} 
+                showMoreButton={true}
+              />
+            </p>
           </div>
         )}
       </CardContent>

@@ -14,12 +14,14 @@ interface TruncatedTextProps {
   text: string;
   maxLength?: number;
   showMoreButton?: boolean;
+  isOption?: boolean;
 }
 
 const TruncatedText = ({ 
   text, 
   maxLength = 150,
-  showMoreButton = true
+  showMoreButton = true,
+  isOption = false
 }: TruncatedTextProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const isMobile = useIsMobile();
@@ -29,6 +31,11 @@ const TruncatedText = ({
   
   // For mobile/tablet: show truncated text with "Show more" button if showMoreButton is true
   if (isMobile) {
+    // For options, just show truncated text without Show more button
+    if (isOption) {
+      return <span>{text.substring(0, maxLength)}...</span>;
+    }
+    
     return (
       <div>
         {isExpanded ? (
@@ -62,8 +69,8 @@ const TruncatedText = ({
     );
   }
   
-  // For desktop: use tooltip if showMoreButton is false, otherwise use expand/collapse
-  if (!showMoreButton) {
+  // For desktop: use tooltip if for options, otherwise use expand/collapse
+  if (isOption) {
     return (
       <TooltipProvider>
         <Tooltip>

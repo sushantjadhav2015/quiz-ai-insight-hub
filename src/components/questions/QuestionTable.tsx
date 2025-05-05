@@ -141,7 +141,8 @@ const QuestionTable: React.FC<QuestionTableProps> = ({
                                     <p className="text-sm">
                                       <TruncatedText 
                                         text={option}
-                                        showMoreButton={false} 
+                                        showMoreButton={false}
+                                        isOption={true}
                                       />
                                     </p>
                                   </div>
@@ -156,7 +157,7 @@ const QuestionTable: React.FC<QuestionTableProps> = ({
                               <p className="text-sm text-muted-foreground">
                                 <TruncatedText 
                                   text={question.explanation}
-                                  showMoreButton={false} 
+                                  showMoreButton={true} 
                                 />
                               </p>
                             </div>
