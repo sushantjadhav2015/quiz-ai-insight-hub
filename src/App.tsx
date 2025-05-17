@@ -28,6 +28,7 @@ import Categories from "./pages/admin/Categories";
 import Students from "./pages/admin/Students";
 import Payments from "./pages/admin/Payments";
 import Questions from "./pages/admin/Questions";
+import Quizzes from "./pages/admin/Quizzes";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -67,6 +68,7 @@ const App = () => (
                 <Route path="/admin/students" element={<Students />} />
                 <Route path="/admin/payments" element={<Payments />} />
                 <Route path="/admin/questions" element={<Questions />} />
+                <Route path="/admin/quizzes" element={<Quizzes />} />
                 
                 {/* 404 Catch-All Route */}
                 <Route path="*" element={<NotFound />} />

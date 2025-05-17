@@ -19,7 +19,8 @@ import {
   CreditCard, 
   PlusCircle, 
   ArrowRight,
-  FileText
+  FileText,
+  Book
 } from 'lucide-react';
 
 const AdminDashboard: React.FC = () => {
@@ -162,26 +163,26 @@ const AdminDashboard: React.FC = () => {
           
           <Card>
             <CardHeader>
-              <CardTitle>Students & Payments</CardTitle>
+              <CardTitle>Manage Quizzes</CardTitle>
               <CardDescription>
-                View student data and payment history
+                Create and configure quizzes for students
               </CardDescription>
             </CardHeader>
             <CardContent className="flex flex-col gap-4">
               <Button
-                onClick={() => navigate('/admin/students')}
+                onClick={() => navigate('/admin/quizzes')}
                 className="w-full"
               >
-                View Students
+                View Quizzes
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
               <Button
                 variant="outline"
-                onClick={() => navigate('/admin/payments')}
+                onClick={() => navigate('/admin/quizzes')}
                 className="w-full"
               >
-                Payment History
-                <ArrowRight className="ml-2 h-4 w-4" />
+                <Book className="mr-2 h-4 w-4" />
+                Create Quiz
               </Button>
             </CardContent>
           </Card>

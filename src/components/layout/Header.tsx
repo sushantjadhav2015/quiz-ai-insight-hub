@@ -12,7 +12,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Brain, History } from 'lucide-react';
+import { Brain, History, Book } from 'lucide-react';
 
 const Header: React.FC = () => {
   const { user, isLoading, logout, isAdmin, isStudent } = useAuth();
@@ -87,6 +87,13 @@ const Header: React.FC = () => {
                     Questions
                   </Button>
                   <Button
+                    variant={isActive('/admin/quizzes') ? 'default' : 'ghost'}
+                    onClick={() => navigate('/admin/quizzes')}
+                  >
+                    <Book className="h-4 w-4 mr-2" />
+                    Quizzes
+                  </Button>
+                  <Button
                     variant={isActive('/admin/students') ? 'default' : 'ghost'}
                     onClick={() => navigate('/admin/students')}
                   >
@@ -124,6 +131,11 @@ const Header: React.FC = () => {
                 {isStudent && (
                   <DropdownMenuItem onClick={() => navigate('/history')}>
                     History
+                  </DropdownMenuItem>
+                )}
+                {isAdmin && (
+                  <DropdownMenuItem onClick={() => navigate('/admin/quizzes')}>
+                    Quizzes
                   </DropdownMenuItem>
                 )}
                 <DropdownMenuItem onClick={() => navigate('/profile')}>

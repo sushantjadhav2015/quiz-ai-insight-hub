@@ -6,3 +6,4 @@ export * from './quiz';
 export * from './payments';
 export * from './results';
 export * from './students';
+export * from './quizzes';
