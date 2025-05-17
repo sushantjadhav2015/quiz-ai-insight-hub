@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Slider } from '@/components/ui/slider';
 import { 
@@ -21,6 +20,14 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import { cn } from '@/lib/utils';
+import { X, Plus, Trash2 } from 'lucide-react';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const formSchema = z.object({
   name: z.string().min(3, 'Name must be at least 3 characters'),
@@ -54,6 +61,8 @@ const QuizForm: React.FC<QuizFormProps> = ({ categories, initialData, onSubmit, 
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [percentages, setPercentages] = useState<Record<string, number>>({});
   const [totalPercentage, setTotalPercentage] = useState(0);
+  const [availableCategories, setAvailableCategories] = useState<Category[]>([]);
+  const [categoryToAdd, setCategoryToAdd] = useState<string>("");
 
   // Set up react-hook-form
   const form = useForm<z.infer<typeof formSchema>>({
@@ -70,6 +79,11 @@ const QuizForm: React.FC<QuizFormProps> = ({ categories, initialData, onSubmit, 
       categoryDistribution: [],
     },
   });
+
+  // Initialize available categories
+  useEffect(() => {
+    updateAvailableCategories();
+  }, [categories, selectedCategories]);
 
   // Initialize state if editing an existing quiz
   useEffect(() => {
@@ -90,39 +104,50 @@ const QuizForm: React.FC<QuizFormProps> = ({ categories, initialData, onSubmit, 
     }
   }, [initialData]);
 
-  const handleCategoryToggle = (categoryId: string) => {
-    setSelectedCategories(prev => {
-      // If category is already selected, remove it
-      if (prev.includes(categoryId)) {
-        // Also remove its percentage
-        const newPercentages = { ...percentages };
-        delete newPercentages[categoryId];
-        setPercentages(newPercentages);
-        
-        // Recalculate total percentage
-        const newTotal = Object.values(newPercentages).reduce((sum, val) => sum + val, 0);
-        setTotalPercentage(newTotal);
-        
-        return prev.filter(id => id !== categoryId);
-      } 
-      // Otherwise add it with 0% initially
-      else {
-        setPercentages(prev => ({ ...prev, [categoryId]: 0 }));
-        return [...prev, categoryId];
-      }
-    });
+  const updateAvailableCategories = () => {
+    if (categories) {
+      const available = categories.filter(cat => !selectedCategories.includes(cat.id));
+      setAvailableCategories(available);
+    }
   };
 
-  const handlePercentageChange = (categoryId: string, value: number[]) => {
-    const newPercentage = value[0];
-    setPercentages(prev => ({ ...prev, [categoryId]: newPercentage }));
+  const handleAddCategory = () => {
+    if (categoryToAdd && !selectedCategories.includes(categoryToAdd)) {
+      setSelectedCategories(prev => [...prev, categoryToAdd]);
+      setPercentages(prev => ({ ...prev, [categoryToAdd]: 0 }));
+      setCategoryToAdd("");
+      updateAvailableCategories();
+    }
+  };
+
+  const handleRemoveCategory = (categoryId: string) => {
+    setSelectedCategories(prev => prev.filter(id => id !== categoryId));
+    
+    // Remove percentage for this category
+    const newPercentages = { ...percentages };
+    delete newPercentages[categoryId];
+    setPercentages(newPercentages);
+    
+    // Recalculate total
+    const newTotal = Object.values(newPercentages).reduce((sum, val) => sum + val, 0);
+    setTotalPercentage(newTotal);
+    
+    updateAvailableCategories();
+  };
+
+  const handlePercentageChange = (categoryId: string, value: number) => {
+    setPercentages(prev => ({ ...prev, [categoryId]: value }));
     
     // Calculate new total
     const newTotal = Object.entries(percentages)
-      .map(([id, val]) => id === categoryId ? newPercentage : val)
+      .map(([id, val]) => id === categoryId ? value : val)
       .reduce((sum, val) => sum + val, 0);
       
     setTotalPercentage(newTotal);
+  };
+
+  const getCategoryName = (categoryId: string) => {
+    return categories?.find(cat => cat.id === categoryId)?.name || 'Unknown';
   };
 
   const handleFormSubmit = (values: z.infer<typeof formSchema>) => {
@@ -199,40 +224,79 @@ const QuizForm: React.FC<QuizFormProps> = ({ categories, initialData, onSubmit, 
             Select categories and assign percentage of questions from each
           </p>
           
-          <div className="grid gap-4">
-            {categories.map((category) => (
-              <div key={category.id} className="space-y-2">
-                <div className="flex items-center space-x-2">
-                  <Checkbox 
-                    id={`category-${category.id}`}
-                    checked={selectedCategories.includes(category.id)}
-                    onCheckedChange={() => handleCategoryToggle(category.id)}
-                  />
-                  <Label 
-                    htmlFor={`category-${category.id}`}
-                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                  >
-                    {category.name}
-                  </Label>
-                </div>
-                
-                {selectedCategories.includes(category.id) && (
+          <div className="flex items-end gap-2">
+            <div className="flex-1">
+              <Select
+                value={categoryToAdd}
+                onValueChange={setCategoryToAdd}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a category" />
+                </SelectTrigger>
+                <SelectContent>
+                  {availableCategories.map(category => (
+                    <SelectItem key={category.id} value={category.id}>
+                      {category.name}
+                    </SelectItem>
+                  ))}
+                  {availableCategories.length === 0 && (
+                    <SelectItem value="no-options" disabled>
+                      No categories available
+                    </SelectItem>
+                  )}
+                </SelectContent>
+              </Select>
+            </div>
+            <Button 
+              type="button" 
+              onClick={handleAddCategory}
+              disabled={!categoryToAdd}
+            >
+              <Plus className="h-4 w-4 mr-1" />
+              Add
+            </Button>
+          </div>
+          
+          <div className="space-y-3 mt-4">
+            {selectedCategories.length > 0 ? (
+              selectedCategories.map(categoryId => (
+                <div 
+                  key={categoryId} 
+                  className="border rounded-md p-3 bg-background"
+                >
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="font-medium">{getCategoryName(categoryId)}</span>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleRemoveCategory(categoryId)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
                   <div className="flex items-center gap-4">
                     <div className="flex-1">
-                      <Slider
-                        value={[percentages[category.id] || 0]}
-                        max={100}
-                        step={5}
-                        onValueChange={(value) => handlePercentageChange(category.id, value)}
+                      <Input
+                        type="number"
+                        min="0"
+                        max="100"
+                        value={percentages[categoryId] || 0}
+                        onChange={(e) => handlePercentageChange(categoryId, parseInt(e.target.value) || 0)}
+                        className="w-full"
                       />
                     </div>
                     <div className="w-12 text-right">
-                      {percentages[category.id] || 0}%
+                      {percentages[categoryId] || 0}%
                     </div>
                   </div>
-                )}
+                </div>
+              ))
+            ) : (
+              <div className="text-center py-4 border border-dashed rounded-md text-muted-foreground">
+                No categories selected
               </div>
-            ))}
+            )}
           </div>
 
           <div className="flex justify-between items-center pt-4 border-t">
