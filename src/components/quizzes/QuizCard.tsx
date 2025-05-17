@@ -1,9 +1,10 @@
 
 import React from 'react';
-import { Category, Quiz } from '@/types';
+import { Quiz } from '@/types/quiz';
+import { Category } from '@/types';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Pencil, Trash2, Category as CategoryIcon, Percent, DollarSign } from 'lucide-react';
+import { Pencil, Trash2, ListChecks, Percent, DollarSign } from 'lucide-react';
 
 interface QuizCardProps {
   quiz: Quiz;
@@ -33,7 +34,7 @@ const QuizCard: React.FC<QuizCardProps> = ({ quiz, categories, onEdit, onDelete 
         <div className="space-y-4">
           <div>
             <h4 className="text-sm font-medium mb-2 flex items-center">
-              <CategoryIcon className="h-4 w-4 mr-1" />
+              <ListChecks className="h-4 w-4 mr-1" />
               Categories
             </h4>
             <div className="space-y-2">

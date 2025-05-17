@@ -8,7 +8,6 @@ import Layout from '@/components/layout/Layout';
 import QuizForm from '@/components/quizzes/QuizForm';
 import QuizCard from '@/components/quizzes/QuizCard';
 import QuizTable from '@/components/quizzes/QuizTable';
-import { ViewMode } from '@/components/questions/ViewToggle';
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -16,8 +15,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Plus, ArrowRight, Book, BookPlus } from 'lucide-react';
-import { Quiz } from '@/types';
+import { Plus, Book, BookPlus } from 'lucide-react';
+import { Quiz } from '@/types/quiz';
+
+type ViewMode = 'table' | 'grid';
 
 const QuizzesPage: React.FC = () => {
   const navigate = useNavigate();

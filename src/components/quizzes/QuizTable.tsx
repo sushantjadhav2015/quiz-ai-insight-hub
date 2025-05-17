@@ -1,6 +1,7 @@
 
 import React from 'react';
-import { Category, Quiz } from '@/types';
+import { Category } from '@/types';
+import { Quiz, CategoryPercentage } from '@/types/quiz';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Pencil, Trash2 } from 'lucide-react';
