@@ -47,7 +47,7 @@ const QuizSession: React.FC = () => {
   
   // Initialize answers array when quiz session is available
   useEffect(() => {
-    if (currentQuizSession && currentQuizSession.questions.length > 0) {
+    if (currentQuizSession && currentQuizSession.questions && currentQuizSession.questions.length > 0) {
       setAnswers(new Array(currentQuizSession.questions.length).fill(-1));
     }
   }, [currentQuizSession]);
@@ -138,7 +138,7 @@ const QuizSession: React.FC = () => {
   };
   
   const handleNextQuestion = () => {
-    if (currentQuestionIndex < (currentQuizSession?.questions.length || 0) - 1) {
+    if (currentQuizSession && currentQuestionIndex < currentQuizSession.questions.length - 1) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
     }
   };
@@ -174,6 +174,18 @@ const QuizSession: React.FC = () => {
     const remainingSeconds = seconds % 60;
     return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
   };
+
+  // Helper function to get category name
+  const getCategoryName = (categoryId: string) => {
+    const categoryNames: Record<string, string> = {
+      '1': 'Aptitude',
+      '2': 'Logical Reasoning',
+      '3': 'Personality',
+      '4': 'Subject Interest',
+      '5': 'Situational Judgement'
+    };
+    return categoryNames[categoryId] || 'General';
+  };
   
   // Redirect if not logged in or not a student
   useEffect(() => {
@@ -186,7 +198,7 @@ const QuizSession: React.FC = () => {
     return <div className="p-10 text-center">Loading...</div>;
   }
   
-  if (!currentQuizSession) {
+  if (!currentQuizSession || !currentQuizSession.questions || currentQuizSession.questions.length === 0) {
     return (
       <Layout hideFooter>
         <div className="container py-10 text-center">
@@ -203,6 +215,26 @@ const QuizSession: React.FC = () => {
   }
   
   const currentQuestion = currentQuizSession.questions[currentQuestionIndex];
+  
+  // Additional safety check for current question
+  if (!currentQuestion || !currentQuestion.options || !Array.isArray(currentQuestion.options)) {
+    return (
+      <Layout hideFooter>
+        <div className="container py-10 text-center">
+          <Alert variant="destructive">
+            <AlertTriangle className="h-4 w-4" />
+            <AlertDescription>
+              There was an issue loading the quiz questions. Please try again.
+            </AlertDescription>
+          </Alert>
+          <Button onClick={() => navigate('/quiz/payment')} className="mt-4">
+            Back to Quiz Setup
+          </Button>
+        </div>
+      </Layout>
+    );
+  }
+  
   const progress = ((currentQuestionIndex + 1) / currentQuizSession.questions.length) * 100;
   
   return (
@@ -242,15 +274,11 @@ const QuizSession: React.FC = () => {
               <CardTitle>Question {currentQuestionIndex + 1}</CardTitle>
               <div className="flex items-center text-sm text-muted-foreground">
                 <BookOpen className="h-4 w-4 mr-1" />
-                {currentQuestion.categoryId === '1' && 'Aptitude'}
-                {currentQuestion.categoryId === '2' && 'Logical Reasoning'}
-                {currentQuestion.categoryId === '3' && 'Personality'}
-                {currentQuestion.categoryId === '4' && 'Subject Interest'}
-                {currentQuestion.categoryId === '5' && 'Situational Judgement'}
+                {getCategoryName(currentQuestion.categoryId)}
               </div>
             </div>
             <CardDescription className="text-lg font-medium text-foreground">
-              {currentQuestion.text}
+              {currentQuestion.text || 'Question text unavailable'}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -277,7 +305,7 @@ const QuizSession: React.FC = () => {
                         <span className="text-xs">{String.fromCharCode(65 + index)}</span>
                       )}
                     </div>
-                    <span>{option}</span>
+                    <span>{option || `Option ${index + 1}`}</span>
                   </div>
                 </div>
               ))}
