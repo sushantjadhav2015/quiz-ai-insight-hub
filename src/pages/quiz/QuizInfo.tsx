@@ -13,7 +13,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { PenTool, ArrowRight } from 'lucide-react';
+import { PenTool, ArrowRight, Target, Zap } from 'lucide-react';
 import { Student } from '@/types';
 
 // Define Zod schema for form validation
@@ -74,6 +74,7 @@ const QuizInfo: React.FC = () => {
         interests: data.interests.split(',').map(item => item.trim()),
         strengths: data.strengths.split(',').map(item => item.trim()),
         weakSubjects: data.weakSubjects.split(',').map(item => item.trim()),
+        quizType: 'traditional'
       };
       
       // Save to quiz context
@@ -88,13 +89,32 @@ const QuizInfo: React.FC = () => {
       });
     },
     onSuccess: () => {
-      // Navigate to payment page
+      // Navigate to payment page for traditional quiz
       navigate('/quiz/payment');
     },
     onError: (error: Error) => {
       setFormError(error.message);
     }
   });
+  
+  const handleCategoryBasedQuiz = () => {
+    // First update the profile, then navigate to category selection
+    const currentFormData = {
+      age: studentUser?.age || 18,
+      interests: studentUser?.interests?.join(', ') || '',
+      strengths: studentUser?.strengths?.join(', ') || '',
+      weakSubjects: studentUser?.weakSubjects?.join(', ') || '',
+    };
+    
+    updateUserProfile({
+      age: currentFormData.age,
+      interests: currentFormData.interests.split(',').map(item => item.trim()),
+      strengths: currentFormData.strengths.split(',').map(item => item.trim()),
+      weakSubjects: currentFormData.weakSubjects.split(',').map(item => item.trim()),
+    }).then(() => {
+      navigate('/quiz/categories');
+    });
+  };
   
   const onSubmit = (data: QuizInfoFormData) => {
     setFormError(null);
@@ -109,9 +129,9 @@ const QuizInfo: React.FC = () => {
     <Layout>
       <div className="container max-w-4xl py-10">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold">Quiz Information</h1>
+          <h1 className="text-3xl font-bold">Choose Your Quiz Experience</h1>
           <p className="text-muted-foreground">
-            Tell us about yourself so we can personalize your quiz experience
+            Tell us about yourself and select how you'd like to take your quiz
           </p>
         </div>
         
@@ -120,59 +140,42 @@ const QuizInfo: React.FC = () => {
           <div className="md:col-span-1">
             <Card>
               <CardHeader>
-                <CardTitle>Quiz Steps</CardTitle>
+                <CardTitle>Quiz Options</CardTitle>
                 <CardDescription>
-                  Complete all steps to get your personalized insights
+                  Choose the quiz experience that works best for you
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  <div className="flex items-start">
-                    <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-primary-foreground text-sm font-bold mr-3">
-                      1
+                  <div className="p-4 border rounded-lg">
+                    <div className="flex items-center mb-2">
+                      <Target className="h-5 w-5 text-primary mr-2" />
+                      <h3 className="font-semibold">Custom Categories</h3>
                     </div>
-                    <div>
-                      <h3 className="font-semibold">Fill Your Info</h3>
-                      <p className="text-sm text-muted-foreground">
-                        Provide your details and preferences
-                      </p>
-                    </div>
+                    <p className="text-sm text-muted-foreground mb-3">
+                      Choose specific categories and get personalized recommendations
+                    </p>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={handleCategoryBasedQuiz}
+                      className="w-full"
+                    >
+                      Choose Categories
+                    </Button>
                   </div>
                   
-                  <div className="flex items-start">
-                    <div className="flex items-center justify-center w-8 h-8 rounded-full bg-muted text-muted-foreground text-sm font-bold mr-3">
-                      2
+                  <div className="p-4 border rounded-lg border-primary bg-primary/5">
+                    <div className="flex items-center mb-2">
+                      <Zap className="h-5 w-5 text-primary mr-2" />
+                      <h3 className="font-semibold">Quick Assessment</h3>
                     </div>
-                    <div>
-                      <h3 className="font-semibold text-muted-foreground">Payment</h3>
-                      <p className="text-sm text-muted-foreground">
-                        Complete payment to unlock your quiz
-                      </p>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-start">
-                    <div className="flex items-center justify-center w-8 h-8 rounded-full bg-muted text-muted-foreground text-sm font-bold mr-3">
-                      3
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-muted-foreground">Take the Quiz</h3>
-                      <p className="text-sm text-muted-foreground">
-                        Answer questions in a secure environment
-                      </p>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-start">
-                    <div className="flex items-center justify-center w-8 h-8 rounded-full bg-muted text-muted-foreground text-sm font-bold mr-3">
-                      4
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-muted-foreground">Get Results</h3>
-                      <p className="text-sm text-muted-foreground">
-                        Receive your personalized AI feedback
-                      </p>
-                    </div>
+                    <p className="text-sm text-muted-foreground mb-3">
+                      Complete our traditional comprehensive assessment
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      Fill the form below to continue with this option
+                    </p>
                   </div>
                 </div>
               </CardContent>

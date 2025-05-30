@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -21,6 +20,7 @@ import QuizInfo from "./pages/quiz/QuizInfo";
 import QuizPayment from "./pages/quiz/QuizPayment";
 import QuizSession from "./pages/quiz/QuizSession";
 import QuizResult from "./pages/quiz/QuizResult";
+import QuizCategorySelection from "./pages/quiz/QuizCategorySelection";
 
 // Admin Pages
 import AdminDashboard from "./pages/admin/AdminDashboard";
@@ -58,6 +58,7 @@ const App = () => (
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/history" element={<StudentHistory />} />
                 <Route path="/quiz/info" element={<QuizInfo />} />
+                <Route path="/quiz/categories" element={<QuizCategorySelection />} />
                 <Route path="/quiz/payment" element={<QuizPayment />} />
                 <Route path="/quiz/session" element={<QuizSession />} />
                 <Route path="/results/:resultId" element={<QuizResult />} />

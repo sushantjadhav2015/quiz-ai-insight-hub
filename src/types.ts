@@ -1,4 +1,3 @@
-
 export type UserRole = 'admin' | 'student';
 
 export interface User {
@@ -45,6 +44,8 @@ export interface QuizInfo {
   interests: string[];
   strengths: string[];
   weakSubjects: string[];
+  selectedCategories?: string[];
+  quizType?: 'traditional' | 'category-based';
 }
 
 export interface QuizSession {
