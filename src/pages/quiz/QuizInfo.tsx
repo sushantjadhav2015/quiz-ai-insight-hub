@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
@@ -74,7 +73,7 @@ const QuizInfo: React.FC = () => {
         interests: data.interests.split(',').map(item => item.trim()),
         strengths: data.strengths.split(',').map(item => item.trim()),
         weakSubjects: data.weakSubjects.split(',').map(item => item.trim()),
-        quizType: 'traditional'
+        quizType: 'traditional' as const
       };
       
       // Save to quiz context
