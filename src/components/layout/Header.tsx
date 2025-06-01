@@ -12,7 +12,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Brain, History, Book } from 'lucide-react';
+import { Brain, History, Book, List } from 'lucide-react';
 
 const Header: React.FC = () => {
   const { user, isLoading, logout, isAdmin, isStudent } = useAuth();
@@ -49,6 +49,13 @@ const Header: React.FC = () => {
                     onClick={() => navigate('/dashboard')}
                   >
                     Dashboard
+                  </Button>
+                  <Button
+                    variant={isActive('/quiz/list') ? 'default' : 'ghost'}
+                    onClick={() => navigate('/quiz/list')}
+                  >
+                    <List className="h-4 w-4 mr-2" />
+                    Quiz List
                   </Button>
                   <Button
                     variant={isActive('/history') ? 'default' : 'ghost'}
@@ -129,9 +136,14 @@ const Header: React.FC = () => {
                   Dashboard
                 </DropdownMenuItem>
                 {isStudent && (
-                  <DropdownMenuItem onClick={() => navigate('/history')}>
-                    History
-                  </DropdownMenuItem>
+                  <>
+                    <DropdownMenuItem onClick={() => navigate('/quiz/list')}>
+                      Quiz List
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => navigate('/history')}>
+                      History
+                    </DropdownMenuItem>
+                  </>
                 )}
                 {isAdmin && (
                   <DropdownMenuItem onClick={() => navigate('/admin/quizzes')}>

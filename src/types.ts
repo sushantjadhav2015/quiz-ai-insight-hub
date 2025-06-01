@@ -1,3 +1,4 @@
+
 export type UserRole = 'admin' | 'student';
 
 export interface User {
@@ -45,7 +46,8 @@ export interface QuizInfo {
   strengths: string[];
   weakSubjects: string[];
   selectedCategories?: string[];
-  quizType?: 'traditional' | 'category-based';
+  selectedQuiz?: string;
+  quizType?: 'traditional' | 'category-based' | 'admin-created';
 }
 
 export interface QuizSession {
