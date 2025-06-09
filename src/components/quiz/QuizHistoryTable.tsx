@@ -41,6 +41,7 @@ interface QuizHistoryItem {
   type: 'payment' | 'quiz';
   date: Date;
   quizName: string;
+  sessionId: string;
   amount?: number;
   score?: number;
   totalQuestions?: number;
@@ -70,6 +71,16 @@ const QuizHistoryTable: React.FC<QuizHistoryTableProps> = ({
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
+  // Generate quiz names based on session ID
+  const getQuizName = (sessionId: string) => {
+    const names = [
+      'Standard 8', 'Class 7', 'Advanced Math', 'Science Quiz', 'English Test',
+      'History Assessment', 'Geography Challenge', 'Physics Exam', 'Chemistry Test', 'Biology Quiz'
+    ];
+    const index = parseInt(sessionId) % names.length;
+    return names[index] || 'Quiz Session';
+  };
+
   // Combine and transform payment and quiz data
   const historyItems = useMemo(() => {
     const items: QuizHistoryItem[] = [];
@@ -77,12 +88,14 @@ const QuizHistoryTable: React.FC<QuizHistoryTableProps> = ({
     // Add payments
     payments.forEach(payment => {
       const relatedQuizResult = quizResults.find(result => result.quizSessionId === payment.quizSessionId);
+      const sessionId = payment.quizSessionId || `temp-${payment.id}`;
       
       items.push({
         id: `payment-${payment.id}`,
         type: 'payment',
         date: payment.createdAt,
-        quizName: 'Quiz Session',
+        quizName: getQuizName(sessionId),
+        sessionId: sessionId,
         amount: payment.amount,
         status: payment.quizSessionId ? 'completed' : 
                 payment.status === 'completed' ? 'available' : 
@@ -101,7 +114,8 @@ const QuizHistoryTable: React.FC<QuizHistoryTableProps> = ({
           id: `quiz-${result.id}`,
           type: 'quiz',
           date: result.completedAt,
-          quizName: 'Quiz Session',
+          quizName: getQuizName(result.quizSessionId),
+          sessionId: result.quizSessionId,
           score: result.score,
           totalQuestions: result.totalQuestions,
           status: 'completed',
@@ -121,6 +135,7 @@ const QuizHistoryTable: React.FC<QuizHistoryTableProps> = ({
     return historyItems.filter(item =>
       item.quizName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       item.status.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.sessionId.toLowerCase().includes(searchTerm.toLowerCase()) ||
       (item.amount && item.amount.toString().includes(searchTerm))
     );
   }, [historyItems, searchTerm]);
@@ -237,14 +252,12 @@ const QuizHistoryTable: React.FC<QuizHistoryTableProps> = ({
                   </TableCell>
                   <TableCell>
                     <div className="font-medium">{item.quizName}</div>
-                    {item.quizSessionId && (
-                      <div className="text-xs text-muted-foreground">
-                        Session: {item.quizSessionId}
-                      </div>
-                    )}
+                    <div className="text-xs text-muted-foreground">
+                      ID: {item.sessionId.substring(0, 8)}...
+                    </div>
                   </TableCell>
                   <TableCell>
-                    {item.amount ? `$${item.amount.toFixed(2)}` : '-'}
+                    {item.amount ? `₹${item.amount.toFixed(2)}` : '-'}
                   </TableCell>
                   <TableCell>
                     {item.score ? (
