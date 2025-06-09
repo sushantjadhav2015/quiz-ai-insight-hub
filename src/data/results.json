@@ -55,5 +55,33 @@
       "personalitySummary": "You have a sharp analytical mind with excellent problem-solving abilities and attention to detail.",
       "careerSuggestions": ["Engineering", "Systems Analysis", "Quality Assurance", "Scientific Research", "Technical Writing"]
     }
+  },
+  {
+    "id": "5",
+    "userId": "2",
+    "quizSessionId": "105",
+    "score": 82,
+    "totalQuestions": 12,
+    "completedAt": "2025-05-15T00:00:00.000Z",
+    "feedback": {
+      "strengths": ["Leadership", "Strategic thinking"],
+      "weakAreas": ["Detail orientation", "Time management"],
+      "personalitySummary": "You show natural leadership qualities and strategic thinking capabilities.",
+      "careerSuggestions": ["Project Management", "Business Development", "Consulting", "Team Leadership", "Operations"]
+    }
+  },
+  {
+    "id": "6",
+    "userId": "2",
+    "quizSessionId": "106",
+    "score": 91,
+    "totalQuestions": 15,
+    "completedAt": "2025-06-01T00:00:00.000Z",
+    "feedback": {
+      "strengths": ["Innovation", "Technology adaptation"],
+      "weakAreas": ["Traditional methods", "Routine tasks"],
+      "personalitySummary": "You excel at embracing new technologies and finding innovative solutions to complex problems.",
+      "careerSuggestions": ["Software Development", "Product Innovation", "Technology Consulting", "Startup Founder", "Digital Transformation"]
+    }
   }
 ]
